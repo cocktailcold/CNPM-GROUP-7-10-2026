@@ -3,9 +3,9 @@
 # o day chi tao bang toi thieu de test duoc cac DAO.
 import sqlite3
 
-from model import (Student, Lecturer, Department, Course, CourseSection,
+from model import (Student, Department, Course, CourseSection,
                    Registration, Semester, Schedule)
-from dao import (StudentDAO, LecturerDAO, DepartmentDAO, CourseDAO,
+from dao import (StudentDAO, DepartmentDAO, CourseDAO,
                  SemesterDAO, CourseSectionDAO, ScheduleDAO, RegistrationDAO)
 
 conn = sqlite3.connect(":memory:")
@@ -15,8 +15,6 @@ CREATE TABLE departments (department_id TEXT PRIMARY KEY, department_name TEXT);
 CREATE TABLE students (person_id TEXT PRIMARY KEY, full_name TEXT, email TEXT,
     password TEXT, phone TEXT, student_code TEXT, major TEXT,
     enrollment_year INTEGER, gpa REAL);
-CREATE TABLE lecturers (person_id TEXT PRIMARY KEY, full_name TEXT, email TEXT,
-    password TEXT, phone TEXT, lecturer_code TEXT, title TEXT);
 CREATE TABLE administrators (person_id TEXT PRIMARY KEY, full_name TEXT,
     email TEXT, password TEXT, phone TEXT, admin_code TEXT);
 CREATE TABLE courses (course_id TEXT PRIMARY KEY, course_name TEXT,
@@ -26,7 +24,7 @@ CREATE TABLE course_prerequisites (course_id TEXT, prerequisite_id TEXT,
 CREATE TABLE semesters (semester_id TEXT PRIMARY KEY, name TEXT,
     start_date TEXT, end_date TEXT, registration_deadline TEXT);
 CREATE TABLE course_sections (section_id TEXT PRIMARY KEY, course_id TEXT,
-    lecturer_id TEXT, semester_id TEXT, max_capacity INTEGER,
+    semester_id TEXT, max_capacity INTEGER,
     current_enrollment INTEGER DEFAULT 0, room TEXT);
 CREATE TABLE schedules (schedule_id TEXT PRIMARY KEY, section_id TEXT,
     day_of_week TEXT, start_period INTEGER, end_period INTEGER, room TEXT);
@@ -36,7 +34,6 @@ CREATE TABLE registrations (registration_id TEXT PRIMARY KEY, student_id TEXT,
 """)
 
 student_dao = StudentDAO(conn)
-lecturer_dao = LecturerDAO(conn)
 department_dao = DepartmentDAO(conn)
 course_dao = CourseDAO(conn)
 semester_dao = SemesterDAO(conn)
@@ -46,8 +43,6 @@ registration_dao = RegistrationDAO(conn)
 
 # du lieu mau
 department_dao.insert(Department("CNTT", "Cong nghe thong tin"))
-lecturer_dao.insert(Lecturer("GV01", "Tran Van B", "b@uni.edu.vn",
-                             "123456", "0901111222", "GV001", "ThS"))
 student_dao.insert(Student("SV01", "Nguyen Van A", "a@st.uni.edu.vn",
                            "123456", "0903333444", "23520001",
                            "Ky thuat phan mem", 2023, 3.2))
@@ -56,8 +51,8 @@ semester_dao.insert(Semester("HK1", "Hoc ky 1 2026-2027",
 course_dao.insert(Course("OOP", "Lap trinh huong doi tuong", 4, "", "CNTT"))
 course_dao.insert(Course("CNPM", "Cong nghe phan mem", 3, "", "CNTT"))
 course_dao.add_prerequisite("CNPM", "OOP")
-section_dao.insert(CourseSection("OOP.1", "OOP", "GV01", "HK1", 50, room="B1.10"))
-section_dao.insert(CourseSection("CNPM.1", "CNPM", "GV01", "HK1", 2, room="B4.02"))
+section_dao.insert(CourseSection("OOP.1", "OOP", "HK1", 50, room="B1.10"))
+section_dao.insert(CourseSection("CNPM.1", "CNPM", "HK1", 2, room="B4.02"))
 schedule_dao.insert(Schedule("L01", "CNPM.1", "Mon", 1, 3, "B4.02"))
 
 # dang nhap

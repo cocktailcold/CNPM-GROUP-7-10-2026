@@ -1,6 +1,5 @@
 from dao.base_dao import BaseDAO
 from dao.student_dao import StudentDAO
-from dao.lecturer_dao import LecturerDAO
 from dao.administrator_dao import AdministratorDAO
 from dao.department_dao import DepartmentDAO
 from dao.course_dao import CourseDAO

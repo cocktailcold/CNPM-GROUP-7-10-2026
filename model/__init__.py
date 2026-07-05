@@ -1,6 +1,5 @@
 from model.person import Person
 from model.student import Student
-from model.lecturer import Lecturer
 from model.administrator import Administrator
 from model.department import Department
 from model.course import Course

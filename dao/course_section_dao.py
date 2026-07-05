@@ -6,9 +6,8 @@ def _row_to_section(row):
     if row is None:
         return None
     return CourseSection(row["section_id"], row["course_id"],
-                         row["lecturer_id"], row["semester_id"],
-                         row["max_capacity"], row["current_enrollment"],
-                         row["room"])
+                         row["semester_id"], row["max_capacity"],
+                         row["current_enrollment"], row["room"])
 
 
 class CourseSectionDAO(BaseDAO):
@@ -16,18 +15,18 @@ class CourseSectionDAO(BaseDAO):
     def insert(self, lop):
         self.conn.execute(
             """INSERT INTO course_sections (section_id, course_id,
-               lecturer_id, semester_id, max_capacity, current_enrollment,
-               room) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-            (lop.section_id, lop.course_id, lop.lecturer_id, lop.semester_id,
+               semester_id, max_capacity, current_enrollment,
+               room) VALUES (?, ?, ?, ?, ?, ?)""",
+            (lop.section_id, lop.course_id, lop.semester_id,
              lop.max_capacity, lop.current_enrollment, lop.room))
         self.commit()
 
     def update(self, lop):
         self.conn.execute(
-            """UPDATE course_sections SET course_id = ?, lecturer_id = ?,
+            """UPDATE course_sections SET course_id = ?,
                semester_id = ?, max_capacity = ?, current_enrollment = ?,
                room = ? WHERE section_id = ?""",
-            (lop.course_id, lop.lecturer_id, lop.semester_id,
+            (lop.course_id, lop.semester_id,
              lop.max_capacity, lop.current_enrollment, lop.room,
              lop.section_id))
         self.commit()

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version='1.0' encoding='UTF-8'?>
 <mxfile host="app.diagrams.net" agent="Grok-Converter">
   <diagram id="diagram-student-course-registration" name="Student Course Registration - Class Diagram">
     <mxGraphModel dx="1885" dy="1036" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1600" pageHeight="1100" math="0" shadow="0">
@@ -64,24 +64,6 @@
         </mxCell>
         <mxCell id="06v5awp4zaX7FnxlblbB-119" parent="06v5awp4zaX7FnxlblbB-110" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;" value="+ viewGrades(): List" vertex="1">
           <mxGeometry height="24" width="260" y="206" as="geometry" />
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-120" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#E1F5EE;strokeColor=#3BB890;fontColor=#222222;swimlaneFillColor=#FFFFFF;" value="Lecturer" vertex="1">
-          <mxGeometry height="134" width="260" x="438.92307692307656" y="847.2307692307693" as="geometry" />
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-121" parent="06v5awp4zaX7FnxlblbB-120" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;" value="- lecturerCode: String" vertex="1">
-          <mxGeometry height="24" width="260" y="30" as="geometry" />
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-122" parent="06v5awp4zaX7FnxlblbB-120" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;" value="- title: String" vertex="1">
-          <mxGeometry height="24" width="260" y="54" as="geometry" />
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-123" parent="06v5awp4zaX7FnxlblbB-120" style="line;strokeWidth=1;fillColor=none;align=left;verticalAlign=middle;spacingTop=-1;spacingLeft=3;spacingRight=3;rotatable=0;labelPosition=right;points=[];portConstraint=eastwest;" value="" vertex="1">
-          <mxGeometry height="8" width="260" y="78" as="geometry" />
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-124" parent="06v5awp4zaX7FnxlblbB-120" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;" value="+ viewTeachingSchedule(): List" vertex="1">
-          <mxGeometry height="24" width="260" y="86" as="geometry" />
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-125" parent="06v5awp4zaX7FnxlblbB-120" style="text;html=1;align=left;verticalAlign=middle;spacingLeft=6;spacingRight=4;overflow=hidden;rotatable=0;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;fontSize=12;" value="+ inputGrade(r, g): void" vertex="1">
-          <mxGeometry height="24" width="260" y="110" as="geometry" />
         </mxCell>
         <mxCell id="06v5awp4zaX7FnxlblbB-126" parent="1" style="swimlane;fontStyle=1;align=center;verticalAlign=top;childLayout=stackLayout;horizontal=1;startSize=30;horizontalStack=0;resizeParent=1;resizeParentMax=0;collapsible=0;marginBottom=0;fillColor=#E1F5EE;strokeColor=#3BB890;fontColor=#222222;swimlaneFillColor=#FFFFFF;" value="Administrator" vertex="1">
           <mxGeometry height="134" width="260" x="750.9230769230767" y="601.2307692307693" as="geometry" />
@@ -240,9 +222,6 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-177" edge="1" parent="1" source="06v5awp4zaX7FnxlblbB-120" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeColor=#5F5E5A;endArrow=block;endFill=0;startArrow=none;" target="06v5awp4zaX7FnxlblbB-100" value="">
-          <mxGeometry relative="1" as="geometry" />
-        </mxCell>
         <mxCell id="06v5awp4zaX7FnxlblbB-178" edge="1" parent="1" source="06v5awp4zaX7FnxlblbB-126" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeColor=#5F5E5A;endArrow=block;endFill=0;startArrow=none;" target="06v5awp4zaX7FnxlblbB-100" value="">
           <mxGeometry relative="1" as="geometry" />
         </mxCell>
@@ -268,23 +247,6 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="06v5awp4zaX7FnxlblbB-184" connectable="0" parent="06v5awp4zaX7FnxlblbB-182" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" value="*" vertex="1">
-          <mxGeometry relative="1" x="0.75" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-185" edge="1" parent="1" source="06v5awp4zaX7FnxlblbB-120" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;jettySize=auto;orthogonalLoop=1;strokeColor=#5F5E5A;endArrow=open;endFill=1;startArrow=none;" target="06v5awp4zaX7FnxlblbB-144" value="teaches">
-          <mxGeometry relative="1" as="geometry">
-            <Array as="points">
-              <mxPoint x="569" y="1140" />
-            </Array>
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-186" connectable="0" parent="06v5awp4zaX7FnxlblbB-185" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" value="1" vertex="1">
-          <mxGeometry relative="1" x="-0.75" as="geometry">
-            <mxPoint as="offset" />
-          </mxGeometry>
-        </mxCell>
-        <mxCell id="06v5awp4zaX7FnxlblbB-187" connectable="0" parent="06v5awp4zaX7FnxlblbB-185" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];fontSize=11;" value="*" vertex="1">
           <mxGeometry relative="1" x="0.75" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>

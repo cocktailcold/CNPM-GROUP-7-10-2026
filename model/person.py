@@ -1,4 +1,4 @@
-# Lop cha cua Student, Lecturer, Administrator
+# Lop cha cua Student, Administrator
 
 
 class Person:
