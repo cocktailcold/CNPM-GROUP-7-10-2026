@@ -23,3 +23,6 @@ Thumbs.db
 
 # Database
 database/app.db
+
+# Word/Office temp lock files
+~\$*
