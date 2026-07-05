@@ -1,42 +1,43 @@
 from dao.base_dao import BaseDAO
 from model.schedule import Schedule
-from model.registration import Registration
+
+# Class diagram: Schedule co thuoc tinh "time". DB (bang Schedule) luu thoi
+# gian o cot "session" (con startDate/endDate de trong) -> map time <-> session.
 
 
 def _row_to_schedule(row):
     if row is None:
         return None
-    return Schedule(row["schedule_id"], row["section_id"],
-                    row["day_of_week"], row["start_period"],
-                    row["end_period"], row["room"])
+    return Schedule(row["scheduleID"], row["courseClassID"], row["roomCode"],
+                    row["session"])
 
 
 class ScheduleDAO(BaseDAO):
 
-    def insert(self, lich):
-        self.conn.execute(
-            """INSERT INTO schedules (schedule_id, section_id, day_of_week,
-               start_period, end_period, room) VALUES (?, ?, ?, ?, ?, ?)""",
-            (lich.schedule_id, lich.section_id, lich.day_of_week,
-             lich.start_period, lich.end_period, lich.room))
-        self.commit()
-
-    def delete_by_section(self, section_id):
-        self.conn.execute(
-            "DELETE FROM schedules WHERE section_id = ?", (section_id,))
-        self.commit()
-
-    def find_by_section(self, section_id):
+    def insert(self, sch):
         cur = self.conn.execute(
-            "SELECT * FROM schedules WHERE section_id = ?", (section_id,))
+            """INSERT INTO Schedule (courseClassID, roomCode, startDate,
+               endDate, session) VALUES (?, ?, ?, ?, ?)""",
+            (sch.course_class_id, sch.room_code, None, None, sch.time))
+        self.commit()
+        return cur.lastrowid  # scheduleID tu tang
+
+    def delete_by_course_class(self, course_class_id):
+        self.conn.execute(
+            "DELETE FROM Schedule WHERE courseClassID = ?", (course_class_id,))
+        self.commit()
+
+    def find_by_course_class(self, course_class_id):
+        cur = self.conn.execute(
+            "SELECT * FROM Schedule WHERE courseClassID = ?",
+            (course_class_id,))
         return [_row_to_schedule(r) for r in cur.fetchall()]
 
-    def find_by_student_and_semester(self, student_id, semester_id):
-        # lich hoc cac lop sinh vien da dang ky trong hoc ky
+    def find_by_student(self, student_id):
+        # lich hoc cua tat ca lop ma sinh vien da dang ky
         cur = self.conn.execute(
-            """SELECT s.* FROM schedules s
-               JOIN course_sections cs ON s.section_id = cs.section_id
-               JOIN registrations r ON r.section_id = cs.section_id
-               WHERE r.student_id = ? AND cs.semester_id = ? AND r.status = ?""",
-            (student_id, semester_id, Registration.STATUS_REGISTERED))
+            """SELECT s.* FROM Schedule s
+               JOIN Enrollment e ON e.courseClassID = s.courseClassID
+               WHERE e.studentID = ?""",
+            (student_id,))
         return [_row_to_schedule(r) for r in cur.fetchall()]
