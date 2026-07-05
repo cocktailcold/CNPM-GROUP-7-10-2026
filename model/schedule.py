@@ -1,14 +1,16 @@
-# Lich hoc cua mot lop hoc phan (CourseClass) tai mot phong (Room)
-
-
 class Schedule:
-    def __init__(self, schedule_id, course_class_id, room_code, time):
+    def __init__(self, schedule_id, section_id, day_of_week,
+                 start_period, end_period, room=""):
         self.schedule_id = schedule_id
-        self.course_class_id = course_class_id  # FK toi CourseClass
-        self.room_code = room_code              # FK toi Room
-        self.time = time
+        self.section_id = section_id
+        self.day_of_week = day_of_week
+        self.start_period = start_period
+        self.end_period = end_period
+        self.room = room
 
-    def conflict_with(self, other):
-        # tra ve boolean - True neu trung lich (cung phong va cung thoi gian)
-        return (self.time == other.time
-                and self.room_code == other.room_code)
+    def overlaps(self, other):
+        # trung lich khi cung thu va khoang tiet giao nhau
+        if self.day_of_week != other.day_of_week:
+            return False
+        return (self.start_period <= other.end_period
+                and other.start_period <= self.end_period)

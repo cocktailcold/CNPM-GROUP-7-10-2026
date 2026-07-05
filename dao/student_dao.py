@@ -1,65 +1,60 @@
 from dao.base_dao import BaseDAO
 from model.student import Student
 
-# Cac cot lay tu JOIN Student + Users
-_SELECT = """SELECT s.studentID, s.userID, s.studentName, s.phone, s.email,
-             s.birthdate, u.userName, u.password, u.role, u.sex, u.status,
-             u.createdDate
-             FROM Student s JOIN Users u ON s.userID = u.userID"""
-
 
 def _row_to_student(row):
     if row is None:
         return None
-    return Student(row["userID"], row["userName"], row["password"],
-                   row["studentID"], row["studentName"], row["email"],
-                   row["phone"], row["birthdate"], row["sex"], None,
-                   row["role"], row["status"], row["createdDate"])
+    return Student(row["person_id"], row["full_name"], row["email"],
+                   row["password"], row["phone"], row["student_code"],
+                   row["major"], row["enrollment_year"], row["gpa"])
 
 
 class StudentDAO(BaseDAO):
 
     def insert(self, s):
-        # tai khoan (Users) phai duoc tao truoc
-        cur = self.conn.execute(
-            """INSERT INTO Student (userID, studentName, phone, email,
-               birthdate) VALUES (?, ?, ?, ?, ?)""",
-            (s.user_id, s.student_name, s.phone, s.email, s.birth_date))
+        self.conn.execute(
+            """INSERT INTO students (person_id, full_name, email, password,
+               phone, student_code, major, enrollment_year, gpa)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+            (s.person_id, s.full_name, s.email, s.password, s.phone,
+             s.student_code, s.major, s.enrollment_year, s.gpa))
         self.commit()
-        return cur.lastrowid  # studentID tu tang
 
     def update(self, s):
         self.conn.execute(
-            """UPDATE Student SET studentName = ?, phone = ?, email = ?,
-               birthdate = ? WHERE studentID = ?""",
-            (s.student_name, s.phone, s.email, s.birth_date, s.student_id))
+            """UPDATE students SET full_name = ?, email = ?, phone = ?,
+               major = ?, enrollment_year = ?, gpa = ? WHERE person_id = ?""",
+            (s.full_name, s.email, s.phone, s.major, s.enrollment_year,
+             s.gpa, s.person_id))
         self.commit()
 
-    def delete(self, student_id):
-        self.conn.execute(
-            "DELETE FROM Student WHERE studentID = ?", (student_id,))
+    def delete(self, person_id):
+        self.conn.execute("DELETE FROM students WHERE person_id = ?",
+                          (person_id,))
         self.commit()
 
-    def find_by_id(self, student_id):
-        cur = self.conn.execute(_SELECT + " WHERE s.studentID = ?",
-                                (student_id,))
-        return _row_to_student(cur.fetchone())
-
-    def find_by_user_id(self, user_id):
-        cur = self.conn.execute(_SELECT + " WHERE s.userID = ?", (user_id,))
+    def find_by_id(self, person_id):
+        cur = self.conn.execute(
+            "SELECT * FROM students WHERE person_id = ?", (person_id,))
         return _row_to_student(cur.fetchone())
 
     def find_by_email(self, email):
-        cur = self.conn.execute(_SELECT + " WHERE s.email = ?", (email,))
+        cur = self.conn.execute(
+            "SELECT * FROM students WHERE email = ?", (email,))
+        return _row_to_student(cur.fetchone())
+
+    def find_by_student_code(self, code):
+        cur = self.conn.execute(
+            "SELECT * FROM students WHERE student_code = ?", (code,))
         return _row_to_student(cur.fetchone())
 
     def find_all(self):
-        cur = self.conn.execute(_SELECT + " ORDER BY s.studentID")
+        cur = self.conn.execute("SELECT * FROM students ORDER BY student_code")
         return [_row_to_student(r) for r in cur.fetchall()]
 
-    def update_password(self, user_id, new_password):
-        # mat khau nam o bang Users
+    def update_password(self, person_id, new_password):
         self.conn.execute(
-            "UPDATE Users SET password = ? WHERE userID = ?",
-            (new_password, user_id))
+            "UPDATE students SET password = ? WHERE person_id = ?",
+            (new_password, person_id))
         self.commit()

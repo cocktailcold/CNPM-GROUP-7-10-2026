@@ -1,119 +1,99 @@
 # Test rieng phan Model + DAO: python test_dao.py
-# Dung CSDL SQLite tam trong bo nho, tao dung schema that (Database/db.sql).
-import os
+# Dung CSDL tam trong bo nho. Ket noi va schema that do phan Database lam,
+# o day chi tao bang toi thieu de test duoc cac DAO.
 import sqlite3
 
-from model import (User, Admin, Student, Course, CourseClass,
-                   StudentResult, Enrollment, Schedule, Room, Building)
-from dao import (UserDAO, AdminDAO, StudentDAO, CourseDAO, CourseClassDAO,
-                 StudentResultDAO, EnrollmentDAO, ScheduleDAO, RoomDAO,
-                 BuildingDAO)
-
-# Doc schema that tu Database/db.sql
-schema_path = os.path.join(os.path.dirname(__file__), "Database", "db.sql")
-with open(schema_path, encoding="utf-8") as f:
-    schema = f.read()
+from model import (Student, Lecturer, Department, Course, CourseSection,
+                   Registration, Semester, Schedule)
+from dao import (StudentDAO, LecturerDAO, DepartmentDAO, CourseDAO,
+                 SemesterDAO, CourseSectionDAO, ScheduleDAO, RegistrationDAO)
 
 conn = sqlite3.connect(":memory:")
 conn.row_factory = sqlite3.Row
-conn.executescript(schema)
+conn.executescript("""
+CREATE TABLE departments (department_id TEXT PRIMARY KEY, department_name TEXT);
+CREATE TABLE students (person_id TEXT PRIMARY KEY, full_name TEXT, email TEXT,
+    password TEXT, phone TEXT, student_code TEXT, major TEXT,
+    enrollment_year INTEGER, gpa REAL);
+CREATE TABLE lecturers (person_id TEXT PRIMARY KEY, full_name TEXT, email TEXT,
+    password TEXT, phone TEXT, lecturer_code TEXT, title TEXT);
+CREATE TABLE administrators (person_id TEXT PRIMARY KEY, full_name TEXT,
+    email TEXT, password TEXT, phone TEXT, admin_code TEXT);
+CREATE TABLE courses (course_id TEXT PRIMARY KEY, course_name TEXT,
+    credits INTEGER, description TEXT, department_id TEXT);
+CREATE TABLE course_prerequisites (course_id TEXT, prerequisite_id TEXT,
+    PRIMARY KEY (course_id, prerequisite_id));
+CREATE TABLE semesters (semester_id TEXT PRIMARY KEY, name TEXT,
+    start_date TEXT, end_date TEXT, registration_deadline TEXT);
+CREATE TABLE course_sections (section_id TEXT PRIMARY KEY, course_id TEXT,
+    lecturer_id TEXT, semester_id TEXT, max_capacity INTEGER,
+    current_enrollment INTEGER DEFAULT 0, room TEXT);
+CREATE TABLE schedules (schedule_id TEXT PRIMARY KEY, section_id TEXT,
+    day_of_week TEXT, start_period INTEGER, end_period INTEGER, room TEXT);
+CREATE TABLE registrations (registration_id TEXT PRIMARY KEY, student_id TEXT,
+    section_id TEXT, registration_date TEXT, status TEXT DEFAULT 'REGISTERED',
+    grade REAL, UNIQUE (student_id, section_id));
+""")
 
-user_dao = UserDAO(conn)
-admin_dao = AdminDAO(conn)
 student_dao = StudentDAO(conn)
+lecturer_dao = LecturerDAO(conn)
+department_dao = DepartmentDAO(conn)
 course_dao = CourseDAO(conn)
-class_dao = CourseClassDAO(conn)
-result_dao = StudentResultDAO(conn)
-enroll_dao = EnrollmentDAO(conn)
+semester_dao = SemesterDAO(conn)
+section_dao = CourseSectionDAO(conn)
 schedule_dao = ScheduleDAO(conn)
-room_dao = RoomDAO(conn)
-building_dao = BuildingDAO(conn)
+registration_dao = RegistrationDAO(conn)
 
-# ---- Tao tai khoan + sinh vien ----
-uid = user_dao.insert(User(None, "sv_a", "123456", sex="Nam",
-                           role="Student", status="Active",
-                           created_date="2026-07-01"))
-sid = student_dao.insert(Student(uid, "sv_a", "123456", None, "Nguyen Van A",
-                                 "a@st.uni.edu.vn", "0903333444",
-                                 "2005-01-01"))
+# du lieu mau
+department_dao.insert(Department("CNTT", "Cong nghe thong tin"))
+lecturer_dao.insert(Lecturer("GV01", "Tran Van B", "b@uni.edu.vn",
+                             "123456", "0901111222", "GV001", "ThS"))
+student_dao.insert(Student("SV01", "Nguyen Van A", "a@st.uni.edu.vn",
+                           "123456", "0903333444", "23520001",
+                           "Ky thuat phan mem", 2023, 3.2))
+semester_dao.insert(Semester("HK1", "Hoc ky 1 2026-2027",
+                             "2026-09-01", "2027-01-15", "2026-08-25"))
+course_dao.insert(Course("OOP", "Lap trinh huong doi tuong", 4, "", "CNTT"))
+course_dao.insert(Course("CNPM", "Cong nghe phan mem", 3, "", "CNTT"))
+course_dao.add_prerequisite("CNPM", "OOP")
+section_dao.insert(CourseSection("OOP.1", "OOP", "GV01", "HK1", 50, room="B1.10"))
+section_dao.insert(CourseSection("CNPM.1", "CNPM", "GV01", "HK1", 2, room="B4.02"))
+schedule_dao.insert(Schedule("L01", "CNPM.1", "Mon", 1, 3, "B4.02"))
 
-# ---- Tao tai khoan admin ----
-admin_uid = user_dao.insert(User(None, "admin1", "adminpw", role="Admin",
-                                 status="Active", created_date="2026-07-01"))
-admin_dao.insert(Admin(admin_uid, "admin1", "adminpw", None, "Tran Admin",
-                       "0900000000"))
-
-# ---- Dang nhap ----
+# dang nhap
 sv = student_dao.find_by_email("a@st.uni.edu.vn")
-print("Dang nhap SV:", sv.login("sv_a", "123456"))
-print("Ho ten SV:", sv.student_name)
+print("Dang nhap:", sv.login("a@st.uni.edu.vn", "123456"))
 
-# ---- Giao vien (chua co model Teacher trong class diagram) ----
-conn.execute("INSERT INTO Teacher (teacherName, phone) VALUES (?, ?)",
-             ("Tran Van B", "0901111222"))
-conn.commit()
-teacher_id = conn.execute("SELECT teacherID FROM Teacher").fetchone()[0]
+# kiem tra tien quyet cua mon CNPM
+prereqs = course_dao.get_prerequisite_ids("CNPM")
+completed = registration_dao.find_completed_course_ids("SV01")
+print("Tien quyet CNPM:", prereqs, "- da hoc xong:", completed)
 
-# ---- Mon hoc + tien quyet ----
-oop_id = course_dao.insert(Course(None, "Lap trinh huong doi tuong", 4,
-                                  "2026-1", "OPEN", 4000000))
-cnpm_id = course_dao.insert(Course(None, "Cong nghe phan mem", 3,
-                                   "2026-1", "OPEN", 3000000))
-course_dao.add_prerequisite(cnpm_id, oop_id)
-print("Tien quyet CNPM:", course_dao.get_prerequisite_ids(cnpm_id),
-      "=> [", oop_id, "]")
+# cho SV hoc xong OOP roi kiem tra lai
+registration_dao.insert(Registration("R0", "SV01", "OOP.1", "2026-01-10"))
+registration_dao.update_grade("R0", 8.5)
+print("Sau khi hoc OOP:", registration_dao.find_completed_course_ids("SV01"))
 
-# ---- Lop hoc phan ----
-oop_class = class_dao.insert(CourseClass(None, oop_id, None, 50, 0),
-                            teacher_id=teacher_id)
-cnpm_class = class_dao.insert(CourseClass(None, cnpm_id, None, 2, 0),
-                             teacher_id=teacher_id)
-cc = class_dao.find_by_id(cnpm_class)
-print("Giang vien lop CNPM:", cc.instructor_name, "| si so toi da:",
-      cc.max_enroll)
+# kiem tra trung lich
+lich_moi = schedule_dao.find_by_section("CNPM.1")[0]
+lich_cu = schedule_dao.find_by_student_and_semester("SV01", "HK1")
+print("Trung lich:", any(lich_moi.overlaps(l) for l in lich_cu))
 
-# ---- Toa nha + phong ----
-b_id = building_dao.insert(Building(None, "Toa B4"))
-room_dao.insert(Room(None, b_id), room_name="B4.02")
-r_code = room_dao.find_by_building(b_id)[0].room_code
+# dang ky lop CNPM.1
+if section_dao.increment_enrollment("CNPM.1"):
+    registration_dao.insert(Registration("R1", "SV01", "CNPM.1", "2026-07-03"))
+    print("Dang ky CNPM.1 thanh cong")
 
-# ---- Lich hoc ----
-schedule_dao.insert(Schedule(None, oop_class, r_code, "Thu 2, tiet 1-3"))
-schedule_dao.insert(Schedule(None, cnpm_class, r_code, "Thu 2, tiet 1-3"))
+# lop chi co 2 cho -> nguoi thu 3 phai bi tu choi
+section_dao.increment_enrollment("CNPM.1")
+print("Dang ky khi lop day:", section_dao.increment_enrollment("CNPM.1"))
+print("Si so:", section_dao.find_by_id("CNPM.1").current_enrollment, "/ 2")
 
-# ---- Xet tien quyet: SV chua hoc OOP ----
-passed = result_dao.find_passed_course_ids(sid)
-print("Da hoc dat:", passed, "-> du dieu kien hoc CNPM:", oop_id in passed)
+# xem danh sach da dang ky roi huy
+for r in registration_dao.find_by_student("SV01"):
+    print("Da dang ky:", r.section_id, r.status)
+registration_dao.cancel("R1")
+section_dao.decrement_enrollment("CNPM.1")
+print("Sau khi huy con:", len(registration_dao.find_by_student("SV01")), "lop")
 
-# cho SV hoc dat OOP roi xet lai
-result_dao.insert(StudentResult(None, sid, oop_id, 8.5, "Pass"))
-passed = result_dao.find_passed_course_ids(sid)
-print("Sau khi hoc OOP:", passed, "-> du dieu kien:", oop_id in passed)
-
-# ---- Kiem tra trung lich ----
-lich_cnpm = schedule_dao.find_by_course_class(cnpm_class)[0]
-schedule_dao.insert(Schedule(None, oop_class, r_code, "Thu 2, tiet 1-3"))
-# gia lap SV da dang ky OOP de co lich cu
-enroll_dao.insert(Enrollment(None, sid, oop_class, "2026-07-05"))
-lich_cu = schedule_dao.find_by_student(sid)
-print("Trung lich:", any(lich_cnpm.conflict_with(l) for l in lich_cu))
-
-# ---- Dang ky lop CNPM (con 2 cho) ----
-if class_dao.increment_enroll(cnpm_class):
-    enroll_dao.insert(Enrollment(None, sid, cnpm_class, "2026-07-06"))
-    print("Dang ky CNPM thanh cong")
-
-# ---- Lop day -> nguoi tiep theo bi tu choi ----
-class_dao.increment_enroll(cnpm_class)  # cho thu 2
-print("Dang ky khi lop day:", class_dao.increment_enroll(cnpm_class))
-print("Si so:", class_dao.find_by_id(cnpm_class).get_current_enroll(), "/ 2")
-
-# ---- Xem cac lop da dang ky roi huy ----
-print("So lop da dang ky:", len(enroll_dao.find_by_student(sid)))
-en = enroll_dao.find_active_enrollment(sid, cnpm_class)
-enroll_dao.cancel(en.enroll_id)
-class_dao.decrement_enroll(cnpm_class)
-print("Sau khi huy con:", len(enroll_dao.find_by_student(sid)), "lop")
-
-print("\n== TAT CA TEST CHAY OK ==")
 conn.close()

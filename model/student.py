@@ -1,29 +1,28 @@
-from model.user import User
+from model.person import Person
 
 
-class Student(User):
-    def __init__(self, user_id, username, password, student_id, student_name,
-                 email, phone, birth_date, sex=None, national_id=None,
-                 role="STUDENT", status=None, created_date=None):
-        super().__init__(user_id, username, password, sex, national_id, role,
-                         status, created_date)
-        self.student_id = student_id
-        self.student_name = student_name
-        self.email = email
-        self.phone = phone
-        self.birth_date = birth_date
+class Student(Person):
+    def __init__(self, person_id, full_name, email, password, phone,
+                 student_code, major, enrollment_year, gpa=0.0):
+        super().__init__(person_id, full_name, email, password, phone)
+        self.student_code = student_code
+        self.major = major
+        self.enrollment_year = enrollment_year
+        self.gpa = gpa
 
-    def enroll_course(self):
-        # tra ve boolean
-        pass
+    def register_section(self, section):
+        # dang ky vao mot lop hoc phan, tra ve True neu con cho
+        return section.add_student()
 
-    def cancel_enrollment(self):
-        pass
+    def drop_section(self, section):
+        # huy dang ky khoi mot lop hoc phan
+        section.remove_student()
+        return True
 
     def view_schedule(self):
-        # tra ve list<Schedule>
+        # tra ve danh sach lich hoc (du lieu lay qua DAO o tang service)
         return []
 
-    def view_tuition(self):
-        # tra ve double (hoc phi)
-        return 0.0
+    def view_grades(self):
+        # tra ve danh sach diem (du lieu lay qua DAO o tang service)
+        return []
