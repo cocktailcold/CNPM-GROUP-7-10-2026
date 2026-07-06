@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UTH - Cổng thông tin sinh viên</title>
+<style>
+  :root{
+    --navy-900:#0a1f3d;
+    --navy-800:#0f2c54;
+    --navy-700:#153a6b;
+    --blue-500:#1f5faa;
+    --blue-400:#2f74c9;
+    --gold-400:#f0ab1e;
+    --gold-500:#d99215;
+    --ink:#152238;
+    --muted:#6b7686;
+    --line:#e4e8ef;
+    --bg:#f2f5f9;
+    --card:#ffffff;
+    --green:#1e8f5f;
+    --green-bg:#e9f8f0;
+    --red:#c0392b;
+    --red-bg:#fdecea;
+    --radius:14px;
+    --shadow:0 10px 30px rgba(10,31,61,.10);
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    font-family:"Inter","Segoe UI",Roboto,system-ui,sans-serif;
+    background:var(--bg);
+    color:var(--ink);
+    min-height:100vh;
+  }
+  .screen{ display:none; min-height:100vh; }
+  .screen.active{ display:block; }
+
+  /* ---------- Auth screens ---------- */
+  .auth-wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:
+      radial-gradient(1200px 600px at 15% 10%, rgba(240,171,30,.18), transparent 55%),
+      linear-gradient(160deg, var(--navy-900) 0%, var(--navy-700) 55%, var(--blue-500) 100%);
+    padding:24px;
+  }
+  .auth-card{
+    width:100%;
+    max-width:380px;
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:36px 32px 28px;
+  }
+  .brand{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    margin-bottom:22px;
+  }
+  .brand-badge{
+    width:56px; height:56px; border-radius:50%;
+    background:linear-gradient(150deg,var(--navy-800),var(--blue-500));
+    border:3px solid var(--gold-400);
+    color:#fff; font-weight:800; font-size:18px;
+    display:flex; align-items:center; justify-content:center;
+    letter-spacing:.5px;
+  }
+  .brand-title{font-size:15px; font-weight:700; color:var(--navy-900); text-align:center; line-height:1.3;}
+  .brand-sub{font-size:12px; color:var(--muted);}
+
+  .role-switch{
+    display:flex; background:var(--bg); border-radius:10px; padding:4px; margin-bottom:20px;
+  }
+  .role-switch button{
+    flex:1; border:none; background:transparent; padding:9px 0; border-radius:8px;
+    font-size:13px; font-weight:600; color:var(--muted); cursor:pointer; transition:.15s;
+  }
+  .role-switch button.active{ background:var(--navy-900); color:#fff; }
+
+  .field{ margin-bottom:14px; }
+  .field label{ display:block; font-size:12.5px; font-weight:600; color:var(--muted); margin-bottom:6px; }
+  .field input, .field select{
+    width:100%; padding:11px 13px; border-radius:9px; border:1.5px solid var(--line);
+    font-size:14px; outline:none; transition:.15s; background:#fff; color:var(--ink);
+  }
+  .field input:focus, .field select:focus{ border-color:var(--blue-400); box-shadow:0 0 0 3px rgba(47,116,201,.15); }
+
+  .btn{
+    display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    border:none; border-radius:9px; font-weight:700; font-size:14px; cursor:pointer;
+    padding:11px 18px; transition:.15s;
+  }
+  .btn-primary{ background:var(--navy-900); color:#fff; width:100%; }
+  .btn-primary:hover{ background:var(--navy-700); }
+  .btn-gold{ background:var(--gold-400); color:var(--navy-900); }
+  .btn-gold:hover{ background:var(--gold-500); }
+  .btn-ghost{ background:transparent; color:var(--blue-500); }
+  .btn-outline{ background:#fff; border:1.5px solid var(--line); color:var(--ink); }
+  .btn-outline:hover{ border-color:var(--blue-400); }
+  .btn-sm{ padding:6px 12px; font-size:12.5px; border-radius:7px; }
+  .btn-danger{ background:var(--red-bg); color:var(--red); }
+
+  .auth-links{ display:flex; justify-content:space-between; margin-top:14px; font-size:12.5px; }
+  .auth-links a{ color:var(--blue-500); text-decoration:none; cursor:pointer; font-weight:600; }
+  .auth-links a:hover{ text-decoration:underline; }
+
+  .msg{ font-size:12.5px; border-radius:8px; padding:9px 11px; margin-bottom:14px; display:none; }
+  .msg.error{ background:var(--red-bg); color:var(--red); display:block; }
+  .msg.ok{ background:var(--green-bg); color:var(--green); display:block; }
+
+  .hint-back{ text-align:center; margin-top:16px; font-size:12.5px; color:var(--muted); }
+  .hint-back a{ color:var(--blue-500); font-weight:600; cursor:pointer; text-decoration:none; }
+
+  /* ---------- App shell ---------- */
+  .app{ display:flex; min-height:100vh; }
+  .sidebar{
+    width:230px; flex-shrink:0;
+    background:linear-gradient(180deg,var(--navy-900),var(--navy-800));
+    color:#fff; padding:22px 14px; display:flex; flex-direction:column;
+  }
+  .sidebar .brand-badge{ width:42px; height:42px; font-size:14px; margin:0 auto; }
+  .sidebar-title{ text-align:center; font-size:12.5px; font-weight:700; margin:10px 0 4px; letter-spacing:.3px; }
+  .sidebar-sub{ text-align:center; font-size:11px; color:#9fb3d1; margin-bottom:22px; }
+  .nav-item{
+    display:flex; align-items:center; gap:10px; padding:11px 13px; border-radius:9px;
+    color:#cdd9ec; font-size:13.5px; font-weight:600; cursor:pointer; margin-bottom:4px; transition:.15s;
+  }
+  .nav-item .ic{ font-size:16px; width:18px; text-align:center; }
+  .nav-item:hover{ background:rgba(255,255,255,.06); color:#fff; }
+  .nav-item.active{ background:var(--gold-400); color:var(--navy-900); }
+  .sidebar-footer{ margin-top:auto; }
+
+  .main{ flex:1; min-width:0; }
+  .topbar{
+    background:#fff; border-bottom:1px solid var(--line);
+    padding:14px 28px; display:flex; align-items:center; justify-content:space-between;
+  }
+  .topbar-title{ font-size:16px; font-weight:800; color:var(--navy-900); }
+  .topbar-title .eyebrow{ display:block; font-size:11px; font-weight:700; color:var(--gold-500); letter-spacing:.6px; text-transform:uppercase; margin-bottom:2px;}
+  .user-chip{ display:flex; align-items:center; gap:10px; }
+  .user-chip .avatar{
+    width:36px; height:36px; border-radius:50%; background:var(--blue-500); color:#fff;
+    display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px;
+  }
+  .user-chip .who{ font-size:13px; }
+  .user-chip .who b{ display:block; font-size:13px; }
+  .user-chip .who span{ color:var(--muted); font-size:11.5px; }
+
+  .content{ padding:26px 28px; max-width:1180px; }
+  .view{ display:none; }
+  .view.active{ display:block; }
+
+  .grid-cards{ display:grid; grid-template-columns:repeat(auto-fit,minmax(190px,1fr)); gap:16px; margin-bottom:22px; }
+  .stat-card{ background:#fff; border-radius:12px; padding:18px; box-shadow:var(--shadow); border-top:3px solid var(--blue-500); }
+  .stat-card .num{ font-size:26px; font-weight:800; color:var(--navy-900); }
+  .stat-card .lbl{ font-size:12.5px; color:var(--muted); margin-top:2px; }
+
+  .card{ background:#fff; border-radius:12px; padding:22px; box-shadow:var(--shadow); margin-bottom:20px; }
+  .card h3{ margin:0 0 4px; font-size:15.5px; color:var(--navy-900); }
+  .card .desc{ font-size:12.5px; color:var(--muted); margin-bottom:16px; }
+
+  .toolbar{ display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:16px; }
+  .toolbar .field{ margin-bottom:0; min-width:180px; }
+
+  table{ width:100%; border-collapse:collapse; font-size:13px; }
+  th, td{ padding:10px 12px; text-align:left; border-bottom:1px solid var(--line); }
+  th{ background:#f6f8fb; color:var(--muted); font-size:11.5px; text-transform:uppercase; letter-spacing:.4px; font-weight:700; }
+  tr:last-child td{ border-bottom:none; }
+  .tbl-wrap{ overflow-x:auto; }
+
+  .badge{ display:inline-block; padding:3px 9px; border-radius:20px; font-size:11px; font-weight:700; }
+  .badge.green{ background:var(--green-bg); color:var(--green); }
+  .badge.red{ background:var(--red-bg); color:var(--red); }
+  .badge.gold{ background:#fdf2dc; color:var(--gold-500); }
+  .badge.blue{ background:#e8f1fc; color:var(--blue-500); }
+
+  .success-banner{
+    display:none; background:var(--green-bg); border:1px solid #bfe8d4; color:var(--green);
+    border-radius:10px; padding:14px 16px; margin-bottom:18px; font-size:13.5px; font-weight:600;
+    align-items:center; gap:10px;
+  }
+  .success-banner.show{ display:flex; }
+  .success-banner .x{ margin-left:auto; cursor:pointer; font-weight:800; opacity:.6; }
+
+  .credit-bar{ font-size:12.5px; color:var(--muted); margin-top:10px; }
+  .credit-bar b{ color:var(--navy-900); }
+
+  .modal-overlay{
+    position:fixed; inset:0; background:rgba(10,20,40,.45); display:none;
+    align-items:center; justify-content:center; z-index:50; padding:20px;
+  }
+  .modal-overlay.show{ display:flex; }
+  .modal{ background:#fff; border-radius:14px; width:100%; max-width:420px; padding:24px; box-shadow:var(--shadow); }
+  .modal h3{ margin:0 0 16px; font-size:15.5px; }
+  .modal-actions{ display:flex; gap:10px; margin-top:6px; }
+  .modal-actions .btn{ flex:1; }
+
+  .empty{ text-align:center; padding:30px 10px; color:var(--muted); font-size:13px; }
+
+  @media (max-width:820px){
+    .sidebar{ width:72px; }
+    .sidebar-title, .sidebar-sub, .nav-item span.lbl{ display:none; }
+    .nav-item{ justify-content:center; }
+    .content{ padding:18px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ================= LOGIN ================= -->
+<div class="screen active" id="screen-login">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-badge">UTH</div>
+        <div class="brand-title">TRƯỜNG ĐẠI HỌC GIAO THÔNG VẬN TẢI<br>TP. HỒ CHÍ MINH</div>
+        <div class="brand-sub">Hệ thống đăng ký học phần</div>
+      </div>
+
+      <div class="role-switch">
+        <button type="button" class="active" data-role="student" onclick="setLoginRole('student')">Sinh viên</button>
+        <button type="button" data-role="admin" onclick="setLoginRole('admin')">Quản trị viên</button>
+      </div>
+
+      <div class="msg error" id="login-error">Sai tài khoản hoặc mật khẩu. Vui lòng thử lại.</div>
+
+      <div class="field">
+        <label id="login-id-label">Mã số sinh viên</label>
+        <input id="login-id" type="text" placeholder="VD: 22DTH12345">
+      </div>
+      <div class="field">
+        <label>Mật khẩu</label>
+        <input id="login-pw" type="password" placeholder="••••••••">
+      </div>
+
+      <button class="btn btn-primary" onclick="doLogin()">Đăng nhập</button>
+
+      <div class="auth-links">
+        <a onclick="goto('screen-forgot')">Quên mật khẩu?</a>
+        <span style="color:#9aa4b2;">v1.0</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= FORGOT PASSWORD ================= -->
+<div class="screen" id="screen-forgot">
+  <div class="auth-wrap">
+    <div class="auth-card">
+      <div class="brand">
+        <div class="brand-badge">UTH</div>
+        <div class="brand-title">Khôi phục mật khẩu</div>
+        <div class="brand-sub">Nhập MSSV và email đã đăng ký</div>
+      </div>
+
+      <div id="forgot-form">
+        <div class="msg error" id="forgot-error">Không tìm thấy tài khoản khớp với thông tin trên.</div>
+        <div class="field">
+          <label>Mã số sinh viên</label>
+          <input id="forgot-id" type="text" placeholder="VD: 22DTH12345">
+        </div>
+        <div class="field">
+          <label>Email đã đăng ký</label>
+          <input id="forgot-email" type="email" placeholder="ten@student.uth.edu.vn">
+        </div>
+        <button class="btn btn-primary" onclick="doForgot()">Gửi yêu cầu đặt lại</button>
+      </div>
+
+      <div id="forgot-success" style="display:none;">
+        <div class="msg ok">Xác thực thành công! Mật khẩu mới đã được gửi tới email của bạn.</div>
+        <button class="btn btn-primary" onclick="goto('screen-login')">Quay về đăng nhập</button>
+      </div>
+
+      <div class="hint-back"><a onclick="goto('screen-login')">← Quay lại đăng nhập</a></div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= STUDENT APP ================= -->
+<div class="screen" id="screen-student">
+  <div class="app">
+    <div class="sidebar">
+      <div class="brand-badge">UTH</div>
+      <div class="sidebar-title">CỔNG SINH VIÊN</div>
+      <div class="sidebar-sub">Course Registration System</div>
+
+      <div class="nav-item active" data-view="sv-home" onclick="showStudentView('sv-home')"><span class="ic">🏠</span><span class="lbl">Trang chủ</span></div>
+      <div class="nav-item" data-view="sv-register" onclick="showStudentView('sv-register')"><span class="ic">📝</span><span class="lbl">Đăng ký học phần</span></div>
+      <div class="nav-item" data-view="sv-schedule" onclick="showStudentView('sv-schedule')"><span class="ic">🗓️</span><span class="lbl">Thời khóa biểu</span></div>
+      <div class="nav-item" data-view="sv-history" onclick="showStudentView('sv-history')"><span class="ic">📚</span><span class="lbl">Lịch sử đăng ký</span></div>
+      <div class="nav-item" data-view="sv-profile" onclick="showStudentView('sv-profile')"><span class="ic">👤</span><span class="lbl">Thông tin cá nhân</span></div>
+
+      <div class="sidebar-footer">
+        <div class="nav-item" onclick="doLogout()"><span class="ic">🚪</span><span class="lbl">Đăng xuất</span></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-title"><span class="eyebrow" id="sv-view-eyebrow">Sinh viên</span><span id="sv-view-title">Trang chủ</span></div>
+        <div class="user-chip">
+          <div class="avatar" id="sv-avatar">NA</div>
+          <div class="who"><b id="sv-name-chip">Nguyễn Văn A</b><span id="sv-id-chip">22DTH12345</span></div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- Trang chủ -->
+        <div class="view active" id="sv-home">
+          <div class="grid-cards">
+            <div class="stat-card"><div class="num" id="home-credits">12</div><div class="lbl">Tín chỉ đã đăng ký (HK1 2025-2026)</div></div>
+            <div class="stat-card" style="border-top-color:var(--gold-400)"><div class="num" id="home-courses">4</div><div class="lbl">Học phần đang theo học</div></div>
+            <div class="stat-card" style="border-top-color:var(--green)"><div class="num">3.2</div><div class="lbl">Điểm TB tích lũy</div></div>
+            <div class="stat-card" style="border-top-color:var(--red)"><div class="num">27/07</div><div class="lbl">Hạn đăng ký học phần</div></div>
+          </div>
+          <div class="card">
+            <h3>Xin chào, Nguyễn Văn A 👋</h3>
+            <div class="desc">Đây là tổng quan nhanh về tình trạng học tập của bạn trong học kỳ hiện tại.</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Mã HP</th><th>Tên học phần</th><th>Số TC</th><th>Lịch học</th><th>Phòng</th></tr></thead>
+                <tbody id="home-course-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Đăng ký học phần -->
+        <div class="view" id="sv-register">
+          <div class="success-banner" id="register-success">
+            <span>✅</span><span id="register-success-text">Đăng ký thành công!</span>
+            <span class="x" onclick="document.getElementById('register-success').classList.remove('show')">✕</span>
+          </div>
+
+          <div class="card">
+            <h3>Chọn học kỳ</h3>
+            <div class="desc">Chọn học kỳ để xem danh sách tất cả học phần có thể đăng ký.</div>
+            <div class="toolbar">
+              <div class="field">
+                <label>Học kỳ</label>
+                <select id="semester-select" onchange="renderAvailableCourses()">
+                  <option value="hk1-2526">Học kỳ 1 - Năm học 2025-2026</option>
+                  <option value="hk2-2526">Học kỳ 2 - Năm học 2025-2026</option>
+                  <option value="hk-he-25">Học kỳ hè - 2025</option>
+                </select>
+              </div>
+              <div class="field" style="max-width:220px;">
+                <label>Tìm kiếm học phần</label>
+                <input type="text" id="course-search" placeholder="Nhập mã hoặc tên học phần" oninput="renderAvailableCourses()">
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3>Danh sách học phần có thể đăng ký</h3>
+            <div class="desc">Chọn học phần muốn đăng ký, sau đó bấm "Đăng ký các học phần đã chọn". Kết quả và thời khóa biểu sẽ hiển thị ngay bên dưới.</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th></th><th>Mã HP</th><th>Tên học phần</th><th>Số TC</th><th>Giảng viên</th><th>Lịch học</th><th>Phòng</th><th>Sĩ số</th>
+                  </tr>
+                </thead>
+                <tbody id="available-course-body"></tbody>
+              </table>
+            </div>
+            <div class="credit-bar">Tổng số tín chỉ đã đăng ký trong học kỳ: <b id="credit-total">12</b> / 24 tín chỉ tối đa</div>
+            <div style="margin-top:16px;">
+              <button class="btn btn-gold" onclick="registerSelected()">Đăng ký các học phần đã chọn</button>
+            </div>
+          </div>
+
+          <div class="card" id="my-schedule-card">
+            <h3>Học phần &amp; lịch học đã đăng ký - Học kỳ hiện tại</h3>
+            <div class="desc">Danh sách toàn bộ học phần bạn đã đăng ký thành công, cập nhật trực tiếp mỗi khi đăng ký thêm.</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Mã HP</th><th>Tên học phần</th><th>Số TC</th><th>Giảng viên</th><th>Lịch học</th><th>Phòng</th><th></th></tr></thead>
+                <tbody id="registered-course-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thời khóa biểu -->
+        <div class="view" id="sv-schedule">
+          <div class="card">
+            <h3>Thời khóa biểu cá nhân</h3>
+            <div class="desc">Thời khóa biểu được tổng hợp tự động từ các học phần bạn đã đăng ký.</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Thứ / Buổi</th><th>Tiết 1-3 (Sáng)</th><th>Tiết 4-6 (Chiều)</th><th>Tiết 7-9 (Tối)</th></tr></thead>
+                <tbody id="timetable-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Lịch sử đăng ký -->
+        <div class="view" id="sv-history">
+          <div class="card">
+            <h3>Lịch sử đăng ký học phần</h3>
+            <div class="desc">Xem lại các học phần đã đăng ký ở các học kỳ trước và học kỳ hiện tại.</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Học kỳ</th><th>Mã HP</th><th>Tên học phần</th><th>Số TC</th><th>Điểm</th><th>Trạng thái</th></tr></thead>
+                <tbody id="history-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Thông tin cá nhân -->
+        <div class="view" id="sv-profile">
+          <div class="card" style="max-width:520px;">
+            <h3>Thông tin cá nhân</h3>
+            <div class="desc">Cập nhật thông tin liên hệ của bạn. Mã số sinh viên không thể thay đổi.</div>
+            <div class="field"><label>Họ và tên</label><input type="text" value="Nguyễn Văn A"></div>
+            <div class="field"><label>Mã số sinh viên</label><input type="text" value="22DTH12345" disabled></div>
+            <div class="field"><label>Lớp</label><input type="text" value="DTH22A"></div>
+            <div class="field"><label>Email</label><input type="email" value="22dth12345@student.uth.edu.vn"></div>
+            <div class="field"><label>Số điện thoại</label><input type="text" value="0901 234 567"></div>
+            <button class="btn btn-primary" onclick="alert('Đã lưu thông tin cá nhân.')" style="width:auto;">Lưu thay đổi</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ================= ADMIN APP ================= -->
+<div class="screen" id="screen-admin">
+  <div class="app">
+    <div class="sidebar">
+      <div class="brand-badge">UTH</div>
+      <div class="sidebar-title">QUẢN TRỊ HỆ THỐNG</div>
+      <div class="sidebar-sub">Course Registration System</div>
+
+      <div class="nav-item active" data-view="ad-home" onclick="showAdminView('ad-home')"><span class="ic">📊</span><span class="lbl">Tổng quan</span></div>
+      <div class="nav-item" data-view="ad-courses" onclick="showAdminView('ad-courses')"><span class="ic">📘</span><span class="lbl">Quản lý học phần</span></div>
+      <div class="nav-item" data-view="ad-students" onclick="showAdminView('ad-students')"><span class="ic">🎓</span><span class="lbl">Quản lý sinh viên</span></div>
+      <div class="nav-item" data-view="ad-reports" onclick="showAdminView('ad-reports')"><span class="ic">📈</span><span class="lbl">Báo cáo đăng ký</span></div>
+
+      <div class="sidebar-footer">
+        <div class="nav-item" onclick="doLogout()"><span class="ic">🚪</span><span class="lbl">Đăng xuất</span></div>
+      </div>
+    </div>
+
+    <div class="main">
+      <div class="topbar">
+        <div class="topbar-title"><span class="eyebrow">Quản trị viên</span><span id="ad-view-title">Tổng quan</span></div>
+        <div class="user-chip">
+          <div class="avatar" style="background:var(--gold-500)">AD</div>
+          <div class="who"><b>Trần Thị Quản Trị</b><span>Phòng Đào tạo</span></div>
+        </div>
+      </div>
+
+      <div class="content">
+
+        <!-- Tổng quan -->
+        <div class="view active" id="ad-home">
+          <div class="grid-cards">
+            <div class="stat-card"><div class="num">1,248</div><div class="lbl">Sinh viên đang hoạt động</div></div>
+            <div class="stat-card" style="border-top-color:var(--gold-400)"><div class="num">86</div><div class="lbl">Học phần mở trong học kỳ</div></div>
+            <div class="stat-card" style="border-top-color:var(--green)"><div class="num">4,532</div><div class="lbl">Lượt đăng ký thành công</div></div>
+            <div class="stat-card" style="border-top-color:var(--red)"><div class="num">37</div><div class="lbl">Yêu cầu chờ xử lý</div></div>
+          </div>
+          <div class="card">
+            <h3>Học phần sắp đầy chỗ</h3>
+            <div class="desc">Các học phần có tỉ lệ đăng ký trên 90% sĩ số, cần theo dõi để mở thêm lớp nếu cần.</div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Mã HP</th><th>Tên học phần</th><th>Đã đăng ký</th><th>Sĩ số tối đa</th><th>Trạng thái</th></tr></thead>
+                <tbody>
+                  <tr><td>IT301</td><td>Cấu trúc dữ liệu &amp; giải thuật</td><td>58</td><td>60</td><td><span class="badge red">Gần đầy</span></td></tr>
+                  <tr><td>EN201</td><td>Tiếng Anh chuyên ngành</td><td>44</td><td>45</td><td><span class="badge red">Gần đầy</span></td></tr>
+                  <tr><td>TR105</td><td>Kỹ thuật giao thông đô thị</td><td>52</td><td>60</td><td><span class="badge gold">Còn chỗ</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quản lý học phần -->
+        <div class="view" id="ad-courses">
+          <div class="card">
+            <div class="toolbar" style="justify-content:space-between;">
+              <div>
+                <h3 style="margin-bottom:2px;">Danh sách học phần</h3>
+                <div class="desc" style="margin-bottom:0;">Thêm, chỉnh sửa hoặc gỡ học phần khỏi hệ thống đăng ký.</div>
+              </div>
+              <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-course')">+ Thêm học phần</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Mã HP</th><th>Tên học phần</th><th>Số TC</th><th>Giảng viên</th><th>Sĩ số</th><th></th></tr></thead>
+                <tbody id="admin-course-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quản lý sinh viên -->
+        <div class="view" id="ad-students">
+          <div class="card">
+            <div class="toolbar" style="justify-content:space-between;">
+              <div>
+                <h3 style="margin-bottom:2px;">Danh sách sinh viên</h3>
+                <div class="desc" style="margin-bottom:0;">Xem, thêm hoặc vô hiệu hóa tài khoản sinh viên.</div>
+              </div>
+              <button class="btn btn-gold btn-sm" onclick="openModal('modal-add-student')">+ Thêm sinh viên</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>MSSV</th><th>Họ và tên</th><th>Lớp</th><th>Email</th><th>Trạng thái</th><th></th></tr></thead>
+                <tbody id="admin-student-body"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Báo cáo -->
+        <div class="view" id="ad-reports">
+          <div class="card">
+            <h3>Báo cáo đăng ký học phần</h3>
+            <div class="desc">Thống kê nhanh theo học kỳ hiện tại. Có thể xuất báo cáo để lưu trữ hoặc trình ký.</div>
+            <div class="toolbar">
+              <div class="field"><label>Học kỳ</label>
+                <select><option>Học kỳ 1 - 2025-2026</option><option>Học kỳ 2 - 2025-2026</option></select>
+              </div>
+              <button class="btn btn-outline btn-sm" onclick="alert('Đã xuất báo cáo (mô phỏng).')">⬇ Xuất báo cáo</button>
+            </div>
+            <div class="tbl-wrap">
+              <table>
+                <thead><tr><th>Khoa</th><th>Số SV đăng ký</th><th>Tổng lượt đăng ký</th><th>Tỉ lệ hoàn tất</th></tr></thead>
+                <tbody>
+                  <tr><td>Công nghệ thông tin</td><td>412</td><td>1,684</td><td><span class="badge green">96%</span></td></tr>
+                  <tr><td>Kỹ thuật giao thông</td><td>356</td><td>1,340</td><td><span class="badge green">94%</span></td></tr>
+                  <tr><td>Kinh tế vận tải</td><td>289</td><td>1,022</td><td><span class="badge gold">88%</span></td></tr>
+                  <tr><td>Cơ khí động lực</td><td>191</td><td>690</td><td><span class="badge gold">85%</span></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ---- Simple modals for admin add actions (demo only) ---- -->
+<div class="modal-overlay" id="modal-add-course">
+  <div class="modal">
+    <h3>Thêm học phần mới</h3>
+    <div class="field"><label>Mã học phần</label><input type="text" placeholder="VD: IT405"></div>
+    <div class="field"><label>Tên học phần</label><input type="text" placeholder="VD: Trí tuệ nhân tạo"></div>
+    <div class="field"><label>Số tín chỉ</label><input type="text" placeholder="VD: 3"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-course')">Hủy</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-add-course'); alert('Đã thêm học phần (mô phỏng).')">Lưu học phần</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-add-student">
+  <div class="modal">
+    <h3>Thêm sinh viên mới</h3>
+    <div class="field"><label>MSSV</label><input type="text" placeholder="VD: 25DTH00123"></div>
+    <div class="field"><label>Họ và tên</label><input type="text" placeholder="VD: Lê Thị B"></div>
+    <div class="field"><label>Lớp</label><input type="text" placeholder="VD: DTH25A"></div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('modal-add-student')">Hủy</button>
+      <button class="btn btn-primary" onclick="closeModal('modal-add-student'); alert('Đã thêm sinh viên (mô phỏng).')">Lưu sinh viên</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ============ Data (in-memory only, mô phỏng) ============ */
+const ALL_COURSES = {
+  "hk1-2526": [
+    {code:"IT301", name:"Cấu trúc dữ liệu & giải thuật", credit:3, teacher:"ThS. Phạm Văn Hùng", schedule:"Thứ 2, tiết 1-3", room:"A2-301", seats:"58/60"},
+    {code:"IT305", name:"Cơ sở dữ liệu", credit:3, teacher:"TS. Lê Minh Trí", schedule:"Thứ 3, tiết 4-6", room:"B1-204", seats:"40/55"},
+    {code:"EN201", name:"Tiếng Anh chuyên ngành", credit:2, teacher:"ThS. Nguyễn Thu Hà", schedule:"Thứ 4, tiết 1-3", room:"C3-102", seats:"44/45"},
+    {code:"TR105", name:"Kỹ thuật giao thông đô thị", credit:3, teacher:"TS. Đặng Quốc Bảo", schedule:"Thứ 5, tiết 7-9", room:"A1-105", seats:"52/60"},
+    {code:"MA204", name:"Xác suất thống kê", credit:2, teacher:"ThS. Hoàng Anh Tuấn", schedule:"Thứ 6, tiết 4-6", room:"B2-210", seats:"30/60"},
+    {code:"PE101", name:"Giáo dục thể chất 2", credit:1, teacher:"ThS. Vũ Đình Long", schedule:"Thứ 6, tiết 1-3", room:"Sân vận động", seats:"25/50"}
+  ],
+  "hk2-2526": [
+    {code:"IT402", name:"Trí tuệ nhân tạo", credit:3, teacher:"TS. Ngô Bảo Châu", schedule:"Thứ 2, tiết 4-6", room:"A2-405", seats:"20/50"},
+    {code:"IT410", name:"Phát triển ứng dụng Web", credit:3, teacher:"ThS. Trịnh Văn Nam", schedule:"Thứ 3, tiết 1-3", room:"B1-301", seats:"35/55"},
+    {code:"TR210", name:"Quy hoạch giao thông", credit:2, teacher:"TS. Lý Thanh Sơn", schedule:"Thứ 5, tiết 4-6", room:"A1-203", seats:"18/45"}
+  ],
+  "hk-he-25": [
+    {code:"GE101", name:"Kỹ năng mềm", credit:1, teacher:"ThS. Đỗ Thị Mai", schedule:"Thứ 7, tiết 1-3", room:"C1-101", seats:"12/40"}
+  ]
+};
+
+let registeredCourses = [
+  {code:"IT201", name:"Lập trình hướng đối tượng", credit:3, teacher:"ThS. Phạm Văn Hùng", schedule:"Thứ 2, tiết 1-3", room:"A2-301"},
+  {code:"IT210", name:"Hệ điều hành", credit:3, teacher:"TS. Lê Minh Trí", schedule:"Thứ 3, tiết 4-6", room:"B1-204"},
+  {code:"MA101", name:"Toán rời rạc", credit:3, teacher:"ThS. Hoàng Anh Tuấn", schedule:"Thứ 4, tiết 7-9", room:"B2-210"},
+  {code:"EN101", name:"Tiếng Anh tổng quát", credit:3, teacher:"ThS. Nguyễn Thu Hà", schedule:"Thứ 6, tiết 1-3", room:"C3-102"}
+];
+
+const HISTORY = [
+  {sem:"Học kỳ 2 - 2024-2025", code:"IT201", name:"Lập trình hướng đối tượng", credit:3, grade:"8.5", status:"Đạt"},
+  {sem:"Học kỳ 2 - 2024-2025", code:"MA101", name:"Toán rời rạc", credit:3, grade:"7.0", status:"Đạt"},
+  {sem:"Học kỳ 1 - 2024-2025", code:"IT101", name:"Nhập môn lập trình", credit:3, grade:"9.0", status:"Đạt"},
+  {sem:"Học kỳ 1 - 2024-2025", code:"PE100", name:"Giáo dục thể chất 1", credit:1, grade:"Đạt", status:"Đạt"}
+];
+
+const STUDENTS = [
+  {id:"22DTH12345", name:"Nguyễn Văn A", cls:"DTH22A", email:"22dth12345@student.uth.edu.vn", status:"Đang học"},
+  {id:"22DTH12346", name:"Trần Thị Bích", cls:"DTH22A", email:"22dth12346@student.uth.edu.vn", status:"Đang học"},
+  {id:"23DTH20011", name:"Lê Hoàng Nam", cls:"DTH23B", email:"23dth20011@student.uth.edu.vn", status:"Đang học"},
+  {id:"21DTH09988", name:"Phạm Thu Trang", cls:"DTH21A", email:"21dth09988@student.uth.edu.vn", status:"Tạm ngừng"}
+];
+
+let loginRole = "student";
+
+/* ============ Navigation helpers ============ */
+function goto(id){
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+  document.getElementById("login-error").classList.remove("error");
+  document.getElementById("login-error").style.display="none";
+}
+
+function setLoginRole(role){
+  loginRole = role;
+  document.querySelectorAll(".role-switch button").forEach(b=>b.classList.toggle("active", b.dataset.role===role));
+  document.getElementById("login-id-label").innerText = role==="student" ? "Mã số sinh viên" : "Tài khoản quản trị";
+  document.getElementById("login-id").placeholder = role==="student" ? "VD: 22DTH12345" : "VD: admin.daotao";
+}
+
+function doLogin(){
+  const idVal = document.getElementById("login-id").value.trim();
+  const pwVal = document.getElementById("login-pw").value.trim();
+  const errBox = document.getElementById("login-error");
+  if(!idVal || !pwVal){
+    errBox.style.display="block";
+    errBox.innerText = "Vui lòng nhập đầy đủ tài khoản và mật khẩu.";
+    return;
+  }
+  errBox.style.display="none";
+  if(loginRole === "student"){
+    goto("screen-student");
+    renderStudentApp();
+  } else {
+    goto("screen-admin");
+    renderAdminApp();
+  }
+}
+
+function doForgot(){
+  const id = document.getElementById("forgot-id").value.trim();
+  const email = document.getElementById("forgot-email").value.trim();
+  const err = document.getElementById("forgot-error");
+  if(!id || !email){
+    err.style.display="block";
+    err.innerText = "Vui lòng nhập đầy đủ mã số sinh viên và email.";
+    return;
+  }
+  document.getElementById("forgot-form").style.display="none";
+  document.getElementById("forgot-success").style.display="block";
+}
+
+function doLogout(){
+  goto("screen-login");
+  document.getElementById("login-id").value="";
+  document.getElementById("login-pw").value="";
+}
+
+/* ============ Student view switching ============ */
+const svTitles = {
+  "sv-home":"Trang chủ",
+  "sv-register":"Đăng ký học phần",
+  "sv-schedule":"Thời khóa biểu",
+  "sv-history":"Lịch sử đăng ký",
+  "sv-profile":"Thông tin cá nhân"
+};
+function showStudentView(view){
+  document.querySelectorAll("#screen-student .nav-item").forEach(n=>n.classList.toggle("active", n.dataset.view===view));
+  document.querySelectorAll("#screen-student .view").forEach(v=>v.classList.remove("active"));
+  document.getElementById(view).classList.add("active");
+  document.getElementById("sv-view-title").innerText = svTitles[view];
+}
+
+const adTitles = {
+  "ad-home":"Tổng quan",
+  "ad-courses":"Quản lý học phần",
+  "ad-students":"Quản lý sinh viên",
+  "ad-reports":"Báo cáo đăng ký"
+};
+function showAdminView(view){
+  document.querySelectorAll("#screen-admin .nav-item").forEach(n=>n.classList.toggle("active", n.dataset.view===view));
+  document.querySelectorAll("#screen-admin .view").forEach(v=>v.classList.remove("active"));
+  document.getElementById(view).classList.add("active");
+  document.getElementById("ad-view-title").innerText = adTitles[view];
+}
+
+/* ============ Render: Student app ============ */
+function renderStudentApp(){
+  renderHome();
+  renderAvailableCourses();
+  renderRegisteredCourses();
+  renderTimetable();
+  renderHistory();
+  showStudentView("sv-home");
+}
+
+function renderHome(){
+  const totalCredit = registeredCourses.reduce((s,c)=>s+c.credit,0);
+  document.getElementById("home-credits").innerText = totalCredit;
+  document.getElementById("home-courses").innerText = registeredCourses.length;
+  document.getElementById("home-course-body").innerHTML = registeredCourses.map(c=>
+    `<tr><td>${c.code}</td><td>${c.name}</td><td>${c.credit}</td><td>${c.schedule}</td><td>${c.room}</td></tr>`
+  ).join("");
+}
+
+function renderAvailableCourses(){
+  const sem = document.getElementById("semester-select").value;
+  const q = (document.getElementById("course-search").value || "").toLowerCase();
+  const list = ALL_COURSES[sem].filter(c => !q || c.code.toLowerCase().includes(q) || c.name.toLowerCase().includes(q));
+  const body = document.getElementById("available-course-body");
+  if(list.length===0){
+    body.innerHTML = `<tr><td colspan="8" class="empty">Không tìm thấy học phần phù hợp.</td></tr>`;
+  } else {
+    body.innerHTML = list.map(c=>{
+      const already = registeredCourses.some(r=>r.code===c.code);
+      return `<tr>
+        <td><input type="checkbox" class="course-check" value="${c.code}" ${already?"disabled checked":""}></td>
+        <td>${c.code}</td><td>${c.name}</td><td>${c.credit}</td><td>${c.teacher}</td><td>${c.schedule}</td><td>${c.room}</td>
+        <td>${c.seats}${already ? ' <span class="badge blue">Đã ĐK</span>' : ''}</td>
+      </tr>`;
+    }).join("");
+  }
+  document.getElementById("credit-total").innerText = registeredCourses.reduce((s,c)=>s+c.credit,0);
+}
+
+function registerSelected(){
+  const sem = document.getElementById("semester-select").value;
+  const checks = Array.from(document.querySelectorAll(".course-check:checked:not(:disabled)"));
+  if(checks.length===0){
+    alert("Vui lòng chọn ít nhất một học phần để đăng ký.");
+    return;
+  }
+  const currentCredit = registeredCourses.reduce((s,c)=>s+c.credit,0);
+  const chosen = checks.map(chk => ALL_COURSES[sem].find(c=>c.code===chk.value));
+  const addingCredit = chosen.reduce((s,c)=>s+c.credit,0);
+  if(currentCredit + addingCredit > 24){
+    alert("Không thể đăng ký: vượt quá giới hạn 24 tín chỉ mỗi học kỳ.");
+    return;
+  }
+  chosen.forEach(c => registeredCourses.push({...c, seats:undefined}));
+
+  const banner = document.getElementById("register-success");
+  document.getElementById("register-success-text").innerText =
+    `Đăng ký thành công ${chosen.length} học phần: ${chosen.map(c=>c.code).join(", ")}. Xem lịch học cập nhật bên dưới.`;
+  banner.classList.add("show");
+
+  renderAvailableCourses();
+  renderRegisteredCourses();
+  renderTimetable();
+  renderHome();
+  document.getElementById("my-schedule-card").scrollIntoView({behavior:"smooth", block:"nearest"});
+}
+
+function unregisterCourse(code){
+  registeredCourses = registeredCourses.filter(c=>c.code!==code);
+  renderAvailableCourses();
+  renderRegisteredCourses();
+  renderTimetable();
+  renderHome();
+}
+
+function renderRegisteredCourses(){
+  const body = document.getElementById("registered-course-body");
+  if(registeredCourses.length===0){
+    body.innerHTML = `<tr><td colspan="7" class="empty">Bạn chưa đăng ký học phần nào trong học kỳ này.</td></tr>`;
+    return;
+  }
+  body.innerHTML = registeredCourses.map(c=>
+    `<tr><td>${c.code}</td><td>${c.name}</td><td>${c.credit}</td><td>${c.teacher}</td><td>${c.schedule}</td><td>${c.room}</td>
+     <td><button class="btn btn-danger btn-sm" onclick="unregisterCourse('${c.code}')">Hủy ĐK</button></td></tr>`
+  ).join("");
+}
+
+function renderTimetable(){
+  const days = ["Thứ 2","Thứ 3","Thứ 4","Thứ 5","Thứ 6","Thứ 7"];
+  const rows = days.map(day=>{
+    const sang = registeredCourses.find(c=>c.schedule.startsWith(day) && c.schedule.includes("tiết 1-3"));
+    const chieu = registeredCourses.find(c=>c.schedule.startsWith(day) && c.schedule.includes("tiết 4-6"));
+    const toi = registeredCourses.find(c=>c.schedule.startsWith(day) && c.schedule.includes("tiết 7-9"));
+    const cell = c => c ? `<b>${c.code}</b><br><span style="color:var(--muted); font-size:12px;">${c.room}</span>` : "";
+    return `<tr><td><b>${day}</b></td><td>${cell(sang)}</td><td>${cell(chieu)}</td><td>${cell(toi)}</td></tr>`;
+  }).join("");
+  document.getElementById("timetable-body").innerHTML = rows;
+}
+
+function renderHistory(){
+  document.getElementById("history-body").innerHTML = HISTORY.map(h=>
+    `<tr><td>${h.sem}</td><td>${h.code}</td><td>${h.name}</td><td>${h.credit}</td><td>${h.grade}</td>
+     <td><span class="badge green">${h.status}</span></td></tr>`
+  ).join("");
+}
+
+/* ============ Render: Admin app ============ */
+function renderAdminApp(){
+  const semCourses = ALL_COURSES["hk1-2526"];
+  document.getElementById("admin-course-body").innerHTML = semCourses.map(c=>
+    `<tr><td>${c.code}</td><td>${c.name}</td><td>${c.credit}</td><td>${c.teacher}</td><td>${c.seats}</td>
+     <td><button class="btn btn-outline btn-sm" onclick="alert('Chỉnh sửa ${c.code} (mô phỏng).')">Sửa</button>
+     <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Xóa</button></td></tr>`
+  ).join("");
+
+  document.getElementById("admin-student-body").innerHTML = STUDENTS.map(s=>
+    `<tr><td>${s.id}</td><td>${s.name}</td><td>${s.cls}</td><td>${s.email}</td>
+     <td><span class="badge ${s.status==='Đang học'?'green':'red'}">${s.status}</span></td>
+     <td><button class="btn btn-outline btn-sm" onclick="alert('Chỉnh sửa ${s.id} (mô phỏng).')">Sửa</button>
+     <button class="btn btn-danger btn-sm" onclick="this.closest('tr').remove()">Vô hiệu hóa</button></td></tr>`
+  ).join("");
+
+  showAdminView("ad-home");
+}
+
+/* ============ Modals ============ */
+function openModal(id){ document.getElementById(id).classList.add("show"); }
+function closeModal(id){ document.getElementById(id).classList.remove("show"); }
+</script>
+</body>
+</html>
