@@ -1,12 +1,14 @@
-class Course:
-    def __init__(self, course_id, course_name, credits, description="",
-                 department_id=None, prerequisites=None):
-        self.course_id = course_id
-        self.course_name = course_name
-        self.credits = credits
-        self.description = description
-        self.department_id = department_id
-        self.prerequisites = prerequisites or []  # ma cac mon tien quyet
+# Entity Course - khop bang Courses trong Database/db.sql
 
-    def get_prerequisites(self):
-        return self.prerequisites
+
+class Course:
+    def __init__(self, courseID=None, courseName=None, credit=None,
+                 semester=None, status=None, fee=None, prerequisites=None):
+        self.courseID = courseID
+        self.courseName = courseName
+        self.credit = credit
+        self.semester = semester
+        self.status = status
+        self.fee = fee
+        # danh sach mon tien quyet (list<Course>)
+        self.prerequisites = prerequisites or []

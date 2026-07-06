@@ -1,0 +1,7 @@
+from repositories.base_repository import BaseRepository
+from repositories.user_repository import UserRepository
+from repositories.course_repository import CourseRepository
+from repositories.course_class_repository import CourseClassRepository
+from repositories.enrollment_repository import EnrollmentRepository
+from repositories.result_repository import ResultRepository
+from repositories.schedule_repository import ScheduleRepository

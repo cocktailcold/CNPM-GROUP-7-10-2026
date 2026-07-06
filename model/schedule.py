@@ -1,16 +1,17 @@
-class Schedule:
-    def __init__(self, schedule_id, section_id, day_of_week,
-                 start_period, end_period, room=""):
-        self.schedule_id = schedule_id
-        self.section_id = section_id
-        self.day_of_week = day_of_week
-        self.start_period = start_period
-        self.end_period = end_period
-        self.room = room
+# Entity Schedule - khop bang Schedule trong Database/db.sql
+# Ghi chu: db.sql luu thoi gian o cot "session"; repository anh xa sang
+# thuoc tinh "time" cho khop voi services.
 
-    def overlaps(self, other):
-        # trung lich khi cung thu va khoang tiet giao nhau
-        if self.day_of_week != other.day_of_week:
-            return False
-        return (self.start_period <= other.end_period
-                and other.start_period <= self.end_period)
+
+class Schedule:
+    def __init__(self, scheduleID=None, courseClassID=None, roomCode=None,
+                 time=None, startDate=None, endDate=None):
+        self.scheduleID = scheduleID
+        self.courseClassID = courseClassID
+        self.roomCode = roomCode
+        self.time = time
+        self.startDate = startDate
+        self.endDate = endDate
+
+    def conflict_with(self, other):
+        return self.time == other.time

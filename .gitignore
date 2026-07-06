@@ -21,8 +21,10 @@ env/
 Thumbs.db
 .DS_Store
 
-# Database
+# Database (file SQLite sinh ra khi chay, khong commit)
 database/app.db
+Database/app.db
+*.db
 
 # Word/Office temp lock files
 ~\$*
