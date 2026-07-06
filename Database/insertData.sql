@@ -51,32 +51,32 @@ VALUES
 (3, 2), -- Database <- DSA
 (6, 3); -- Software Engineering <- Database
 
-INSERT INTO coursesClass (courseID, teacherID, maxEnroll, currentEnroll, status) 
+INSERT INTO coursesClass (courseID, teacherID, maxEnroll, currentEnroll) 
 VALUES
 -- Môn 1 (Intro to Programming) -> 3 lớp
-(1, 1, 60, 25, 'Open'),  -- courseClassID: 1 (Lớp 01)
-(1, 2, 60, 10, 'Open'),  -- courseClassID: 2 (Lớp 02)
-(1, 4, 50, 0, 'Open'),  -- courseClassID: 3 (Lớp 03)
+(1, 1, 60, 25),  -- courseClassID: 1 (Lớp 01)
+(1, 2, 60, 10),  -- courseClassID: 2 (Lớp 02)
+(1, 4, 50, 0),  -- courseClassID: 3 (Lớp 03)
 
 -- Môn 2 (Data Structures and Algorithms) -> 2 lớp
-(2, 2, 55, 38, 'Open'),  -- courseClassID: 4 (Lớp 01)
-(2, 3, 55, 0, 'Open'),  -- courseClassID: 5 (Lớp 02)
+(2, 2, 55, 38),  -- courseClassID: 4 (Lớp 01)
+(2, 3, 55, 0),  -- courseClassID: 5 (Lớp 02)
 
 -- Môn 3 (Database Systems) -> 2 lớp
-(3, 3, 50, 1, 'Open'),  -- courseClassID: 6 (Lớp 01)
-(3, 1, 50, 10, 'Open'),  -- courseClassID: 7 (Lớp 02)
+(3, 3, 50, 1),  -- courseClassID: 6 (Lớp 01)
+(3, 1, 50, 10),  -- courseClassID: 7 (Lớp 02)
 
 -- Môn 4 (Operating Systems) -> 2 lớp
-(4, 4, 40, 27, 'Open'),  -- courseClassID: 8 (Lớp 01)
-(4, 2, 40, 19, 'Open'),  -- courseClassID: 9 (Lớp 02)
+(4, 4, 40, 27),  -- courseClassID: 8 (Lớp 01)
+(4, 2, 40, 19),  -- courseClassID: 9 (Lớp 02)
 
 -- Môn 5 (Computer Networks) -> 2 lớp
-(5, 1, 50, 1, 'Open'),  -- courseClassID: 10 (Lớp 01)
-(5, 3, 50, 0, 'Open'),  -- courseClassID: 11 (Lớp 02)
+(5, 1, 50, 1),  -- courseClassID: 10 (Lớp 01)
+(5, 3, 50, 0),  -- courseClassID: 11 (Lớp 02)
 
 -- Môn 6 (Software Engineering) -> 2 lớp
-(6, 2, 40, 0, 'Open'),  -- courseClassID: 12 (Lớp 01)
-(6, 4, 40, 0, 'Open');  -- courseClassID: 13 (Lớp 02)
+(6, 2, 40, 0),  -- courseClassID: 12 (Lớp 01)
+(6, 4, 40, 0);  -- courseClassID: 13 (Lớp 02)
 
 INSERT INTO Enrollment (studentID, courseClassID, enrollDate) 
 VALUES
