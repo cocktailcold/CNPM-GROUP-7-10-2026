@@ -56,7 +56,6 @@ CREATE TABLE coursesClass (
     teacherID int, 
     maxEnroll INT,
     currentEnroll INT DEFAULT 0,
-    status varchar(20),
     FOREIGN KEY (courseID) REFERENCES Courses(courseID),
     FOREIGN KEY (teacherID) REFERENCES Teacher(teacherID)
 );
