@@ -1,5 +1,5 @@
 # Test tang Model + Repositories, va tich hop voi services/ cua nhom.
-# Chay: python test_repositories.py
+# Chay: python tests/test_repositories.py
 import os
 import sys
 
@@ -9,18 +9,18 @@ try:
 except Exception:
     pass
 
-ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, ROOT)
-sys.path.insert(0, os.path.join(ROOT, "services"))  # de import business_rules
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.path.dirname(TEST_DIR)
+sys.path.insert(0, PROJECT_ROOT)
 
 # Tao lai app.db tu db.sql + insertData.sql
-from Database.create_database import create_db
+from database.create_database import create_db
 create_db()
 
 from repositories import (UserRepository, CourseRepository,
                           CourseClassRepository, EnrollmentRepository,
                           ResultRepository, ScheduleRepository)
-from business_rules import passed_prerequisites, has_conflict
+from services.business_rules import passed_prerequisites, has_conflict
 
 user_repo = UserRepository()
 course_repo = CourseRepository()
@@ -30,8 +30,8 @@ result_repo = ResultRepository()
 schedule_repo = ScheduleRepository()
 
 print("== 1. UserRepository ==")
-u = user_repo.find_by_username("admin1")
-print("  admin1 ->", u.userName, "| role:", u.role, "| status:", u.status)
+u = user_repo.find_by_username("Admin1")
+print("  Admin1 ->", u.userName, "| role:", u.role, "| status:", u.status)
 
 print("== 2. CourseRepository ==")
 print("  So mon hoc:", len(course_repo.find_all()))
@@ -66,12 +66,12 @@ print("  Sau khi huy: SV5 con", len(enroll_repo.find_by_student(5)), "lop")
 
 print("\n== 7. Tich hop end-to-end voi services/ ==")
 try:
-    from auth_service import AuthService
-    from enrollment_service import EnrollmentService
+    from services.auth_service import AuthService
+    from services.enrollment_service import EnrollmentService
 
     auth = AuthService()
-    logged = auth.login("admin1", "123456")
-    print("  AuthService.login(admin1):", logged.userName, "OK")
+    logged = auth.login("Admin1", "123456")
+    print("  AuthService.login(Admin1):", logged.userName, "OK")
 
     es = EnrollmentService()
     res = es.enroll_course(5, 3)  # SV5 dang ky lop 3 (mon 1, khong tien quyet)

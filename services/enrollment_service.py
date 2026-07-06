@@ -3,7 +3,7 @@ from repositories.course_class_repository import CourseClassRepository
 from repositories.course_repository import CourseRepository
 from repositories.result_repository import ResultRepository
 from repositories.schedule_repository import ScheduleRepository
-from business_rules import passed_prerequisites, has_conflict
+from services.business_rules import missing_prerequisites, has_conflict
 
 class EnrollmentService:
     def __init__(self):
@@ -25,8 +25,12 @@ class EnrollmentService:
         if course_class.currentEnroll >= course_class.maxEnroll:
             raise Exception("This class is full")
 
-        if not passed_prerequisites(student_id, course_class.courseID, self.course_repo, self.result_repo):
-            raise Exception("Prerequisite not met")
+        missing = missing_prerequisites(
+            student_id, course_class.courseID, self.course_repo, self.result_repo
+        )
+        if missing:
+            names = ", ".join(p.courseName or str(p.courseID) for p in missing)
+            raise Exception(f"Prerequisite not met: {names}")
 
         if has_conflict(student_id, class_id, self.schedule_repo):
             raise Exception("Schedule conflict detected")

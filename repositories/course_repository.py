@@ -14,10 +14,17 @@ class CourseRepository(BaseRepository):
 
     def _load_prerequisites(self, course_id):
         rows = self.db.fetch_all(
-            "SELECT prerequisiteID FROM hasPrerequisite WHERE courseID = ?",
+            """SELECT c.*
+               FROM hasPrerequisite hp
+               JOIN Courses c ON c.courseID = hp.prerequisiteID
+               WHERE hp.courseID = ?
+               ORDER BY c.courseID""",
             (course_id,))
-        # tra ve list<Course> toi gian (chi can courseID cho business_rules)
-        return [Course(courseID=r["prerequisiteID"]) for r in rows]
+        return [
+            Course(r["courseID"], r["courseName"], r["credit"],
+                   r["semester"], r["status"], r["fee"])
+            for r in rows
+        ]
 
     def find_all(self):
         rows = self.db.fetch_all("SELECT * FROM Courses ORDER BY courseID")

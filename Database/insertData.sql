@@ -2,7 +2,7 @@ INSERT INTO Users (userName, password, role, sex, createdDate, status)
 VALUES
 ('IT00000001', 'Anh1001@', 'Student', 'Male', DATE('now'), 'Active'), -- userID: 1
 ('IT00000002', 'Linh1002#', 'Student', 'Female', DATE('now'), 'Active'), -- userID: 2
-('IT00000003', 'Hung2020&', 'Student', 'Male', DATE('now'), 'Active'), -- userID: 3
+('IT00000003', 'Hung1003@', 'Student', 'Male', DATE('now'), 'Active'), -- userID: 3
 ('IT00000004', 'Oanh2021%', 'Student', 'Female', DATE('now'), 'Active'), -- userID: 4
 ('IT00000005', 'Hien&2022!', 'Student', 'Male', DATE('now'), 'Active'), -- userID: 5
 ('IT00000006', 'Han2023^', 'Student', 'Female', DATE('now'), 'Active'), -- userID: 6

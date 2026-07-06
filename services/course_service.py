@@ -9,7 +9,7 @@ class CourseService:
     def get_all_courses(self):
         return self.course_repo.find_all()
 
-    def add_course(self, name, credit, fee):
+    def add_course(self, name, credit, fee, semester="1", status="Active"):
         if not name or not name.strip():
             raise Exception("Course name is required")
         if credit <= 0:
@@ -18,7 +18,13 @@ class CourseService:
             raise Exception("Fee must be a non-negative number")
         if self.course_repo.find_by_name(name) is not None:
             raise Exception("Course name already exists")
-        return self.course_repo.save({"courseName": name, "credit": credit, "fee": fee})
+        return self.course_repo.save({
+            "courseName": name.strip(),
+            "credit": credit,
+            "semester": semester,
+            "status": status,
+            "fee": fee
+        })
 
     def create_class(self, course_id, instructor, max_enroll):
         course = self.course_repo.find_by_id(course_id)

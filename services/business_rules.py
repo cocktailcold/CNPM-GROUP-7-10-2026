@@ -1,13 +1,19 @@
-def passed_prerequisites(student_id, course_id, course_repo, result_repo):
+def missing_prerequisites(student_id, course_id, course_repo, result_repo):
     course = course_repo.find_by_id(course_id)
     if course is None:
         raise Exception("Course not found")
+
     prerequisites = course.prerequisites
     if not prerequisites:
-        return True
+        return []
+
     student_results = result_repo.find_by_student(student_id)
     passed_course_ids = {r.courseID for r in student_results if r.status == "Pass"}
-    return all(p.courseID in passed_course_ids for p in prerequisites)
+    return [p for p in prerequisites if p.courseID not in passed_course_ids]
+
+
+def passed_prerequisites(student_id, course_id, course_repo, result_repo):
+    return not missing_prerequisites(student_id, course_id, course_repo, result_repo)
 
 
 def has_conflict(student_id, class_id, schedule_repo):
