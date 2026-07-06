@@ -10,7 +10,7 @@ VALUES
 ('IT00000008', 'Uyen2025@!', 'Student', 'Female', DATE('now'), 'Active'), -- userID: 8
 ('IT00000009', 'Trung@1010', 'Student', 'Male', DATE('now'), 'Active'), -- userID: 9
 ('IT00000010', 'Van*1020', 'Student', 'Female', DATE('now'), 'Active'), -- userID: 10
-('admin1', '123456', 'Admin', 'Male', DATE('now'), 'Active');          -- userID: 11
+('Admin1', '123456', 'Admin', 'Male', DATE('now'), 'Active');          -- userID: 11
 
 INSERT INTO Admin (userID, name, phone) 
 VALUES
