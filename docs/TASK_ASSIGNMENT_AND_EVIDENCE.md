@@ -4,12 +4,12 @@
 
 | Phân Chia | Công việc | Hiệu quả |
 | --- | --- | --- |
-| Thiên Kim | UI (Presentation Layer) | |
-| Ngọc Hân | Service (Business Logic Layer) | Bonus: Minh Chiến support phần này. |
-| Phi Hùng | Model & Data Access Layer (DAO/Repository) | |
-| Khả Diệp | Database & SQLite Integration | |
-| Minh Chiến | System Integration & Deployment(Main+Utilities) | |
-| Hiếu,Nghĩa | Testing & Documentation | Bonus: Thiên Kim support phần này. |
+| Thiên Kim | UI (Presentation Layer) | 100% |
+| Ngọc Hân | Service (Business Logic Layer) | 100% |
+| Phi Hùng | Model & Data Access Layer (DAO/Repository) | 100% |
+| Khả Diệp | Database & SQLite Integration | 100% |
+| Minh Chiến | System Integration & Deployment(Main+Utilities) | 100% |
+| Hiếu Nghĩa | Testing & Documentation | 100% |
 
 ## Tool Usage Evidence
 
