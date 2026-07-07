@@ -2,15 +2,14 @@
 
 ## Task Assignment
 
-| Member | Main Responsibility | Evidence Files |
+| Phân Chia | Công việc | Hiệu quả |
 | --- | --- | --- |
-| Member 1 | Database design and seed data | `database/db.sql`, `database/insertData.sql` |
-| Member 2 | Entity/model classes | `model/` |
-| Member 3 | Repository layer | `repositories/` |
-| Member 4 | Business/service layer | `services/` |
-| Member 5 | GUI, testing document, and integration testing | `main.py`, `Testing Document Group8.xlsx`, `test_services.py` |
-
-Update the member names before final submission.
+| Thiên Kim | UI (Presentation Layer) | |
+| Ngọc Hân | Service (Business Logic Layer) | Bonus: Minh Chiến support phần này. |
+| Phi Hùng | Model & Data Access Layer (DAO/Repository) | |
+| Khả Diệp | Database & SQLite Integration | |
+| Minh Chiến | System Integration & Deployment(Main+Utilities) | |
+| Hiếu,Nghĩa | Testing & Documentation | Bonus: Thiên Kim support phần này. |
 
 ## Tool Usage Evidence
 
