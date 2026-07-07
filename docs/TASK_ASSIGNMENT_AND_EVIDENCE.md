@@ -9,7 +9,7 @@
 | Phi Hùng | Model & Data Access Layer (DAO/Repository) | 100% |
 | Khả Diệp | Database & SQLite Integration | 100% |
 | Minh Chiến | System Integration & Deployment(Main+Utilities) | 100% |
-| Hiếu Nghĩa | Testing & Documentation | 100% |
+| Hiếu Nghĩa | Testing & Documentation | |
 
 ## Tool Usage Evidence
 
