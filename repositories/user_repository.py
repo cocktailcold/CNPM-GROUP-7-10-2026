@@ -21,6 +21,16 @@ class UserRepository(BaseRepository):
             "SELECT * FROM Users WHERE userID = ?", (user_id,))
         return _to_user(row)
 
+    def find_by_username_and_email(self, username, email):
+        row = self.db.fetch_one(
+            """SELECT u.*
+               FROM Users u
+               JOIN Student s ON s.userID = u.userID
+               WHERE u.userName = ? AND LOWER(s.email) = LOWER(?)""",
+            (username, email),
+        )
+        return _to_user(row)
+
     def find_all(self):
         rows = self.db.fetch_all("SELECT * FROM Users ORDER BY userID")
         return [_to_user(r) for r in rows]

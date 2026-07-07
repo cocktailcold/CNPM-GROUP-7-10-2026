@@ -41,6 +41,33 @@ class ServiceTestCase(unittest.TestCase):
         with self.assertRaisesRegex(Exception, "Invalid username or password"):
             self.auth.login("IT00000003", "wrong-password")
 
+    def test_forgot_password_resets_student_password(self):
+        user = self.auth.verify_identity("IT00000003", "hungal1003@edu.com")
+        self.auth.reset_password(user.userID, "NewPass123", "NewPass123")
+
+        updated = self.auth.user_repo.find_by_id(user.userID)
+        self.assertNotEqual(updated.password, "NewPass123")
+        logged = self.auth.login("IT00000003", "NewPass123")
+        self.assertEqual(logged.userID, user.userID)
+
+    def test_forgot_password_rejects_wrong_email(self):
+        with self.assertRaisesRegex(Exception, "Username or email does not exist"):
+            self.auth.verify_identity("IT00000003", "wrong@edu.com")
+
+    def test_forgot_password_requires_username_and_email(self):
+        with self.assertRaisesRegex(Exception, "Username and email are required"):
+            self.auth.verify_identity("", "hungal1003@edu.com")
+
+    def test_reset_password_requires_matching_confirmation(self):
+        user = self.auth.verify_identity("IT00000003", "hungal1003@edu.com")
+        with self.assertRaisesRegex(Exception, "Passwords do not match"):
+            self.auth.reset_password(user.userID, "NewPass123", "Different123")
+
+    def test_reset_password_rejects_short_password(self):
+        user = self.auth.verify_identity("IT00000003", "hungal1003@edu.com")
+        with self.assertRaisesRegex(Exception, "New password must be at least 6 characters"):
+            self.auth.reset_password(user.userID, "12345", "12345")
+
     def test_admin_can_add_course(self):
         course = self.course_service.add_course("AI Basics", 3, 5500000, "6")
         self.assertEqual(course.courseName, "AI Basics")

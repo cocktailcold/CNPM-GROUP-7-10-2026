@@ -16,13 +16,19 @@ APP_SIZE = "1120x720"
 APP_MIN_SIZE = (980, 620)
 
 LOGIN_DEFAULTS = {
-    "username": "IT00000003",
-    "password": "Hung1003@",
+    "username": "",
+    "password": "",
 }
 
 MESSAGES = {
     "Invalid username or password": "Tên đăng nhập hoặc mật khẩu không đúng.",
     "Account is inactive": "Tài khoản đang bị khóa.",
+    "Username and email are required": "Vui lòng nhập tên đăng nhập và email.",
+    "Username or email does not exist": "Tên đăng nhập hoặc email không tồn tại.",
+    "New password and confirmation are required": "Vui lòng nhập mật khẩu mới và xác nhận mật khẩu.",
+    "Passwords do not match": "Mật khẩu xác nhận không khớp.",
+    "New password must be at least 6 characters": "Mật khẩu mới phải có ít nhất 6 ký tự.",
+    "User not found": "Không tìm thấy người dùng.",
     "You are already enrolled in this class": "Bạn đã đăng ký lớp học phần này.",
     "Class not found": "Không tìm thấy lớp học phần.",
     "This class is full": "Lớp học phần đã đủ số lượng.",
@@ -188,6 +194,8 @@ class CourseRegistrationApp(tk.Tk):
     # ---------- Login ----------
     def _show_login(self):
         self._clear_window()
+        self.current_user = None
+        self.current_student = None
 
         wrapper = tk.Frame(self, bg="#dff3e4")
         wrapper.pack(fill="both", expand=True)
@@ -213,21 +221,149 @@ class CourseRegistrationApp(tk.Tk):
         self._add_login_entry(card, "Mật khẩu", self.password_var, show="*")
 
         ttk.Button(card, text="Đăng nhập", command=self._login).pack(fill="x")
+        ttk.Button(card, text="Quên mật khẩu?", command=self._show_forgot_password).pack(
+            fill="x", pady=(10, 0)
+        )
 
     def _add_login_entry(self, parent, label, variable, show=None):
         ttk.Label(parent, text=label, background="#ffffff").pack(anchor="w")
         ttk.Entry(parent, textvariable=variable, show=show).pack(fill="x", pady=(4, 14))
 
     def _login(self):
-        try:
-            self.current_user = self.auth_service.login(
-                self.username_var.get().strip(),
-                self.password_var.get(),
+        username = self.username_var.get().strip()
+        password = self.password_var.get()
+        if not username or not password:
+            messagebox.showwarning(
+                "Thiếu thông tin",
+                "Vui lòng nhập tên đăng nhập và mật khẩu.",
             )
+            return
+
+        try:
+            self.current_user = self.auth_service.login(username, password)
             self.current_student = self._find_student_by_user(self.current_user.userID)
             self._show_main_screen()
         except Exception as exc:
             messagebox.showerror("Đăng nhập thất bại", error_vi(exc))
+
+    def _show_forgot_password(self):
+        self._clear_window()
+
+        wrapper = tk.Frame(self, bg="#dff3e4")
+        wrapper.pack(fill="both", expand=True)
+
+        card = ttk.Frame(wrapper, padding=32, style="Card.TFrame")
+        card.place(relx=0.5, rely=0.5, anchor="center", width=440)
+
+        self.forgot_username_var = tk.StringVar()
+        self.forgot_email_var = tk.StringVar()
+
+        ttk.Label(
+            card, text="Xác minh danh tính",
+            style="Title.TLabel", background="#ffffff"
+        ).pack(anchor="w")
+        ttk.Label(
+            card,
+            text="Nhập tên đăng nhập và email đã đăng ký để xác minh tài khoản.",
+            style="Subtitle.TLabel",
+            background="#ffffff",
+        ).pack(anchor="w", pady=(4, 24))
+
+        self._add_login_entry(card, "Tên đăng nhập", self.forgot_username_var)
+        self._add_login_entry(card, "Email đã đăng ký", self.forgot_email_var)
+
+        ttk.Button(card, text="Xác minh", command=self._verify_reset_identity).pack(fill="x")
+        ttk.Button(card, text="Quay lại đăng nhập", command=self._show_login).pack(
+            fill="x", pady=(10, 0)
+        )
+
+    def _verify_reset_identity(self):
+        username = self.forgot_username_var.get().strip()
+        email = self.forgot_email_var.get().strip()
+        if not username or not email:
+            messagebox.showwarning(
+                "Thiếu thông tin",
+                "Vui lòng nhập tên đăng nhập và email.",
+            )
+            return
+
+        try:
+            user = self.auth_service.verify_identity(username, email)
+            messagebox.showinfo(
+                "Xác minh thành công",
+                "Thông tin tài khoản hợp lệ. Vui lòng đặt lại mật khẩu.",
+            )
+            self._show_reset_password(user)
+        except Exception as exc:
+            messagebox.showerror("Không thể xác minh", error_vi(exc))
+
+    def _show_reset_password(self, user):
+        self._clear_window()
+
+        wrapper = tk.Frame(self, bg="#dff3e4")
+        wrapper.pack(fill="both", expand=True)
+
+        card = ttk.Frame(wrapper, padding=32, style="Card.TFrame")
+        card.place(relx=0.5, rely=0.5, anchor="center", width=440)
+
+        self.reset_user = user
+        self.new_password_var = tk.StringVar()
+        self.confirm_password_var = tk.StringVar()
+
+        ttk.Label(
+            card, text="Đặt lại mật khẩu",
+            style="Title.TLabel", background="#ffffff"
+        ).pack(anchor="w")
+        ttk.Label(
+            card,
+            text=f"Tài khoản đã xác minh: {user.userName}",
+            style="Subtitle.TLabel",
+            background="#ffffff",
+        ).pack(anchor="w", pady=(4, 24))
+
+        self._add_login_entry(card, "Mật khẩu mới", self.new_password_var, show="*")
+        self._add_login_entry(card, "Xác nhận mật khẩu", self.confirm_password_var, show="*")
+
+        ttk.Button(card, text="Cập nhật mật khẩu", command=self._reset_password).pack(fill="x")
+        ttk.Button(card, text="Quay lại xác minh", command=self._show_forgot_password).pack(
+            fill="x", pady=(10, 0)
+        )
+
+    def _reset_password(self):
+        new_password = self.new_password_var.get()
+        confirm_password = self.confirm_password_var.get()
+        if not new_password or not confirm_password:
+            messagebox.showwarning(
+                "Thiếu thông tin",
+                "Vui lòng nhập mật khẩu mới và xác nhận mật khẩu.",
+            )
+            return
+        if new_password != confirm_password:
+            messagebox.showerror(
+                "Mật khẩu không khớp",
+                "Mật khẩu xác nhận không khớp.",
+            )
+            return
+        if len(new_password) < 6:
+            messagebox.showwarning(
+                "Mật khẩu chưa hợp lệ",
+                "Mật khẩu mới phải có ít nhất 6 ký tự.",
+            )
+            return
+
+        try:
+            self.auth_service.reset_password(
+                self.reset_user.userID,
+                new_password,
+                confirm_password,
+            )
+            messagebox.showinfo(
+                "Thành công",
+                "Mật khẩu đã được cập nhật. Vui lòng đăng nhập bằng mật khẩu mới.",
+            )
+            self._show_login()
+        except Exception as exc:
+            messagebox.showerror("Không thể đặt lại mật khẩu", error_vi(exc))
 
     def _find_student_by_user(self, user_id):
         return self.db.fetch_one("SELECT * FROM Student WHERE userID = ?", (user_id,))
@@ -573,13 +709,6 @@ def ensure_database():
     db_path = os.path.join(os.path.dirname(__file__), "database", "app.db")
     if not os.path.exists(db_path):
         create_db()
-    db = Database()
-    db.execute(
-        "UPDATE Users SET userName = ?, password = ? WHERE userID = ?",
-        (LOGIN_DEFAULTS["username"], LOGIN_DEFAULTS["password"], 3),
-    )
-    db.commit()
-    db.close()
 
 
 def main():
