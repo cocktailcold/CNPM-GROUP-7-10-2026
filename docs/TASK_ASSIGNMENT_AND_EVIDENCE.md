@@ -1,36 +1,23 @@
-# Task Assignment and Tool Usage Evidence - Group 8
+# Minh chứng sử dụng công cụ 
 
-## Task Assignment
+## Minh chứng sử dụng công cụ (Tool)
 
-| Phân Chia | Công việc | Hiệu quả |
+| Công cụ | Mục đích sử dụng | Minh chứng cụ thể |
 | --- | --- | --- |
-| Thiên Kim | UI (Presentation Layer) | 100% |
-| Ngọc Hân | Service (Business Logic Layer) | 100% |
-| Phi Hùng | Model & Data Access Layer (DAO/Repository) | 100% |
-| Khả Diệp | Database & SQLite Integration | 100% |
-| Minh Chiến | System Integration & Deployment(Main+Utilities) | 100% |
-| Hiếu Nghĩa | Testing & Documentation | |
+| Python | Ngôn ngữ lập trình chính của dự án | Các file mã nguồn `.py` |
+| Tkinter | Xây dựng giao diện đồ họa (GUI) | File `main.py` |
+| SQLite | Hệ quản trị cơ sở dữ liệu | Các file `database/app.db`, `database/db.sql` |
+| unittest | Thư viện kiểm thử tự động (Automated Testing) | File `test_services.py` |
+| Docker | Đóng gói môi trường chạy lệnh kiểm thử | File `Dockerfile` |
+| Git | Quản lý mã nguồn và phiên bản code | Lịch sử commit trên Kho chứa (Repository) |
+| Mẫu Excel | Thiết kế tài liệu kịch bản kiểm thử thủ công | File `Testing Document Group8.xlsx` |
 
-## Tool Usage Evidence
-
-| Tool | Usage | Evidence |
-| --- | --- | --- |
-| Python | Main programming language | `.py` source files |
-| Tkinter | Graphical user interface | `main.py` |
-| SQLite | Database | `database/app.db`, `database/db.sql` |
-| unittest | Automated testing | `test_services.py` |
-| Docker | Containerized test command | `Dockerfile` |
-| Git | Version control | Repository history |
-| Excel template | Manual test case document | `Testing Document Group8.xlsx` |
-
-## Verification Commands
+## Các lệnh Xác thực Hệ thống (Verification Commands)
 
 ```powershell
 python -m py_compile main.py test_services.py
 python -m unittest test_services.py
 python test_repositories.py
-```
-
 ## Docker Verification
 
 ```powershell
