@@ -1,0 +1,22 @@
+# Tài liệu Kiểm thử (Testing Document) - Hệ thống Đăng ký Học phần 
+
+## Kịch bản Kiểm thử (Test Cases)
+
+| Mã TC (ID) | Chức năng | Điều kiện tiên quyết | Dữ liệu kiểm thử | Các bước thực hiện | Kết quả mong đợi | Kết quả thực tế | Trạng thái |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| TC-LOGIN-01 | Đăng nhập Sinh viên | CSDL có tài khoản sinh viên đang hoạt động | IT00000003 / Hung1003@ | Mở ứng dụng, nhập tên đăng nhập và mật khẩu, nhấn Đăng nhập | Giao diện điều khiển (Dashboard) của Sinh viên được hiển thị | Đúng như mong đợi | Đạt (Pass) |
+| TC-LOGIN-02 | Đăng nhập Admin | CSDL có tài khoản admin đang hoạt động | Admin1 / 123456 | Mở ứng dụng, nhập tên đăng nhập và mật khẩu, nhấn Đăng nhập | Giao diện điều khiển (Dashboard) của Admin được hiển thị | Đúng như mong đợi | Đạt (Pass) |
+| TC-LOGIN-03 | Từ chối mật khẩu sai | Tài khoản có tồn tại trong hệ thống | IT00000003 / wrongpass | Nhập tên đăng nhập và mật khẩu sai, nhấn Đăng nhập | Hiển thị thông báo lỗi: "Tên đăng nhập hoặc mật khẩu không đúng." | Đúng như mong đợi | Đạt (Pass) |
+| TC-COURSE-01 | Xem danh sách lớp học phần | Sinh viên đã đăng nhập thành công | IT00000003 | Mở tab Đăng ký học phần | Danh sách các lớp học phần đang mở kèm thông tin giảng viên, sĩ số, và lịch học được hiển thị | Đúng như mong đợi | Đạt (Pass) |
+| TC-ENROLL-01 | Đăng ký lớp hợp lệ | Sinh viên đã đăng nhập và lớp học phần đang mở | Sinh viên 5, Lớp 3 | Chọn Lớp 3, nhấn nút Đăng ký lớp đã chọn | Yêu cầu đăng ký được tạo thành công và xuất hiện trong danh sách Lớp đã đăng ký | Đúng như mong đợi | Đạt (Pass) |
+| TC-ENROLL-02 | Từ chối đăng ký trùng môn | Sinh viên đã đăng ký lớp học phần này trước đó | Sinh viên 5, Lớp 3 | Tiến hành đăng ký Lớp 3 lần thứ hai | Yêu cầu đăng ký lần hai bị từ chối | Đúng như mong đợi | Đạt (Pass) |
+| TC-ENROLL-03 | Từ chối do thiếu môn tiên quyết | Sinh viên chưa đạt môn học tiên quyết bắt buộc | Sinh viên 1, Lớp Công nghệ phần mềm | Chọn lớp Công nghệ phần mềm, nhấn nút Đăng ký | Hiển thị thông báo lỗi: "Chưa đạt môn tiên quyết" | Đúng như mong đợi | Đạt (Pass) |
+| TC-ENROLL-04 | Từ chối do lớp đã đầy | Sĩ số hiện tại (currentEnroll) bằng sĩ số tối đa (maxEnroll) | Dữ liệu của một lớp đã đầy | Chọn lớp đã đầy sĩ số, nhấn nút Đăng ký | Hiển thị thông báo lỗi: "Lớp học phần đã đủ số lượng." | Chưa thực hiện với dữ liệu mẫu có sẵn | Đang chờ (Pending) |
+| TC-ENROLL-05 | Từ chối do trùng lịch học | Sinh viên đã có một lớp khác học cùng ca đó | Dữ liệu lớp học phần bị trùng lịch | Chọn lớp bị trùng lịch học, nhấn nút Đăng ký | Hiển thị thông báo lỗi: "Lịch học bị trùng." | Chưa thực hiện với dữ liệu mẫu có sẵn | Đang chờ (Pending) |
+| TC-CANCEL-01 | Hủy đăng ký học phần | Sinh viên có ít nhất một lớp đã đăng ký thành công | Một đăng ký học phần đang tồn tại | Mở tab Lớp đã đăng ký, chọn lớp cần hủy, nhấn Hủy đăng ký đã chọn | Lớp học phần được xóa khỏi danh sách và sĩ số hiện tại của lớp đó giảm đi 1 | Đúng như mong đợi | Đạt (Pass) |
+| TC-SCHEDULE-01 | Xem thời khóa biểu | Sinh viên đã đăng ký các lớp học phần | IT00000003 | Mở tab Thời khóa biểu | Các dòng thời khóa biểu hiển thị rõ thông tin lớp, thời gian, ngày bắt đầu, ngày kết thúc và phòng học | Đúng như mong đợi | Đạt (Pass) |
+| TC-RESULT-01 | Xem kết quả học tập | Sinh viên đã có dữ liệu điểm số trong hệ thống | IT00000003 | Mở tab Kết quả học tập | Điểm GPA và trạng thái Đạt/Không đạt của các môn học được hiển thị | Đúng như mong đợi | Đạt (Pass) |
+| TC-ADMIN-01 | Thêm môn học mới | Admin đã đăng nhập thành công | Tên: Nhập môn AI, tín chỉ: 3, học kỳ: 6, học phí: 5500000 | Mở tab Môn học, nhập đầy đủ thông tin, nhấn Thêm môn | Môn học mới xuất hiện trong danh sách các môn học của hệ thống | Đúng như mong đợi | Đạt (Pass) |
+| TC-ADMIN-02 | Từ chối thêm trùng tên môn | Tên môn học nhập vào đã tồn tại trong hệ thống | Nhập môn lập trình | Tiến hành thêm môn học mới với tên trùng với môn sẵn có | Hiển thị thông báo lỗi: "Tên môn học đã tồn tại." | Đúng như mong đợi | Đạt (Pass) |
+| TC-ADMIN-03 | Tạo lớp học phần | Admin đã đăng nhập và môn học có tồn tại | Mã môn: 1, Giảng viên: Giảng viên Demo, Tối đa: 40 | Mở tab Lớp học phần, nhập đầy đủ thông tin, nhấn Tạo lớp | Lớp học phần mới xuất hiện trong danh sách các lớp học phần | Đúng như mong đợi | Đạt (Pass) |
+| TC-ADMIN-04 | Từ chối tạo lớp với mã môn sai | Admin đã đăng nhập thành công | Mã môn: 9999 | Tiến hành tạo lớp cho một mã môn học không tồn tại | Hiển thị thông báo lỗi: "Không tìm thấy môn học." | Đúng như mong đợi | Đạt (Pass) |
