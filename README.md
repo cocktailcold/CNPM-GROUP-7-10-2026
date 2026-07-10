@@ -26,6 +26,7 @@ Student:
 - Hủy lớp học phần đã đăng ký.
 - Xem thời khóa biểu cá nhân chi tiết.
 - Xem kết quả học tập (điểm GPA, trạng thái đạt/không đạt).
+  
 Admin:
 - Xem danh sách toàn bộ môn học, lớp học phần và người dùng trong hệ thống.
 - Thêm môn học mới vào hệ thống.
