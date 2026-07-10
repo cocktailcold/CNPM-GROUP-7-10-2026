@@ -31,6 +31,3 @@ Admin:
 - Xem danh sách toàn bộ môn học, lớp học phần và người dùng trong hệ thống.
 - Thêm môn học mới vào hệ thống.
 - Tạo lớp học phần mới cho một môn học sẵn có.
-Manual test cases are drafted in `docs/TESTING_DOCUMENT_GROUP8.md`. Before final
-submission, copy them into the official Testing Document Template from
-Elearning 5.
